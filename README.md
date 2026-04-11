@@ -33,7 +33,7 @@ Ancient Wisdom Store is a refined, aesthetically pleasing e-commerce web applica
 
 **Integration:** Razorpay Checkout SDK (UI representation)
 
-**📂 File Structure**
+**📂 File Structure**  
 **index.html:** The core structure of the single-page application, containing all sections from the home page to the checkout screen.
 
 **style.css:** Comprehensive styling that defines the antique aesthetic, parchment-style backgrounds, and gold-themed accents.
