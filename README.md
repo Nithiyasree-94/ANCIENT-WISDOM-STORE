@@ -24,8 +24,8 @@ Ancient Wisdom Store is a refined, aesthetically pleasing e-commerce web applica
 
 **Responsive Design:** A fully functional mobile navigation menu ensures accessibility across devices.
 
-**🛠️ Technology Stack
-Frontend:** HTML5, CSS3
+**🛠️ Technology Stack?**
+**Frontend:** HTML5, CSS3
 
 **Scripting:** JavaScript (Vanilla JS)
 
