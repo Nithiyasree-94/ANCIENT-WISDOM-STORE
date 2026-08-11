@@ -690,186 +690,669 @@
 <!-- ANCIENT WISDOM STORE - DYNAMIC 100+ Q&A AI CHATBOT SYSTEM -->
 <script>
 // =========================================================================
-  // 1. EXPANDED KNOWLEDGE BASE DATASET (Handles typos & short phrases)
-  // =========================================================================
-  const ANCIENT_WISDOM_QA_DATASET = [
-    // --- CATEGORY 1: BOOK RECOMMENDATIONS & SUGGESTIONS ---
-    { 
-      keywords: ["beginner", "start coding", "c programming", "c++", "programming book", "learn code", "coding for beginners"], 
-      answer: "We recommend 'Fundamentals of Programming' by Nithiyasree P (₹299). It is a beginner-friendly guide covering core concepts of C and C++ with step-by-step examples." 
-    },
-    { 
-      keywords: ["data structures", "interview", "arrays", "trees", "graphs", "algorithm", "dsa"], 
-      answer: "'Data Structures Simplified' (₹349) by Nithiyasree P is designed for interview prep, covering Arrays, Trees, and Graphs in simple terms." 
-    },
-    { 
-      keywords: ["sql", "database", "er diagrams", "dbms", "db"], 
-      answer: "'Database Management Essentials' (₹329) covers SQL queries, database fundamentals, and ER diagrams." 
-    },
-    { 
-      keywords: ["distraction", "focus", "discipline", "college distraction"], 
-      answer: "'Focus & Flourish' (₹229) by Nithiyasree P provides practical strategies for overcoming distractions and building daily discipline." 
-    },
-    { 
-      keywords: ["student habits", "college success", "mindset", "power guide", "habits"], 
-      answer: "'The Student's Power Guide' (₹249) offers actionable advice on developing effective habits and a growth mindset for college success." 
-    },
-    { 
-      keywords: ["goal setting", "dream plan achieve", "young minds", "goals"], 
-      answer: "'Dream, Plan, Achieve' (₹269) focuses on structured goal-setting frameworks designed for young minds." 
-    },
-    { 
-      keywords: ["honesty", "kindness", "courage", "moral stories", "virtues"], 
-      answer: "'Virtues of Life' (₹219) features inspiring stories centered on honesty, kindness, and courage." 
-    },
-    { 
-      keywords: ["ethics", "ethical decisions", "right path", "decision making"], 
-      answer: "'The Right Path' (₹239) provides practical insights into ethical decision-making and everyday moral choices." 
-    },
-    { 
-      keywords: ["character", "integrity", "values", "character counts"], 
-      answer: "'Character Counts' (₹209) focuses on core principles for building strong personal values and integrity." 
-    },
-    { 
-      keywords: ["tamil literature", "tamil language", "wisdom of tamil", "tamil mozhi amudam"], 
-      answer: "'Tamil Mozhi Amudam' (₹199) highlights the linguistic beauty and timeless wisdom of the Tamil language." 
-    },
-    { 
-      keywords: ["short moral stories tamil", "tamil tradition", "uyir ezhuthukal"], 
-      answer: "'Uyir Ezhuthukal' (₹189) contains short, moral stories rooted in Tamil tradition." 
-    },
-    { 
-      keywords: ["inspirational verses", "vetri vazhi", "verses student life"], 
-      answer: "'Vetri Vazhi' (₹179) features motivational verses tailored for student inspiration." 
-    },
-    { 
-      keywords: ["cheapest book", "lowest price", "affordable book", "cheap book"], 
-      answer: "'Vetri Vazhi' is our most affordable title at ₹179." 
-    },
-    { 
-      keywords: ["highest price", "costliest book", "premium book", "expensive book"], 
-      answer: "'Data Structures Simplified' is our highest-priced book at ₹349." 
-    },
-    { 
-      keywords: ["engineering category", "all engineering books", "tech books", "engineering"], 
-      answer: "Our Engineering collection includes: 'Fundamentals of Programming' (₹299), 'Data Structures Simplified' (₹349), and 'Database Management Essentials' (₹329)." 
-    },
-    { 
-      keywords: ["self improvement category", "all self help books", "self improvement", "self help"], 
-      answer: "Our Self Improvement section offers: 'The Student's Power Guide' (₹249), 'Focus & Flourish' (₹229), and 'Dream, Plan, Achieve' (₹269)." 
-    },
-    { 
-      keywords: ["moral ethics category", "all moral books", "moral", "ethics"], 
-      answer: "Our Moral & Ethics section includes: 'Virtues of Life' (₹219), 'The Right Path' (₹239), and 'Character Counts' (₹209)." 
-    },
-    { 
-      keywords: ["tamil literature category", "all tamil books", "tamil books", "tamil"], 
-      answer: "Our Tamil Literature collection includes: 'Tamil Mozhi Amudam' (₹199), 'Uyir Ezhuthukal' (₹189), and 'Vetri Vazhi' (₹179)." 
-    },
-    { 
-      keywords: ["all books", "books available", "available books", "book list", "catalog", "collection", "list books", "show books"], 
-      answer: "We offer 12 books across 4 categories:<br>• <strong>Engineering:</strong> Fundamentals of Programming (₹299), Data Structures Simplified (₹349), Database Management Essentials (₹329)<br>• <strong>Self Improvement:</strong> The Student's Power Guide (₹249), Focus & Flourish (₹229), Dream, Plan, Achieve (₹269)<br>• <strong>Moral & Ethics:</strong> Virtues of Life (₹219), The Right Path (₹239), Character Counts (₹209)<br>• <strong>Tamil Literature:</strong> Tamil Mozhi Amudam (₹199), Uyir Ezhuthukal (₹189), Vetri Vazhi (₹179)" 
-    },
+// ANCIENT WISDOM STORE - DYNAMIC AI CHATBOT SYSTEM WITH 100+ Q&A KNOWLEDGE BASE
+// Created by: Nithiyasree P (Roll No: 25104016, National Engineering College)
+// =========================================================================
 
-    // --- CATEGORY 2: PURCHASING, ORDERS & PAYMENTS ---
-    { 
-      keywords: ["payment", "payments", "pay", "paymethod", "paymethods", "pay method", "pay methods", "payment methods", "how to pay", "accepted payments", "mode of payment", "pay options", "payment options", "gpay", "phonepe", "upi", "cod", "cards"], 
-      answer: "We accept Cash on Delivery (COD), Google Pay, PhonePe, UPI (Paytm/BHIM), Debit/Credit Cards, and Net Banking." 
-    },
-    { 
-      keywords: ["cash on delivery", "cod available", "pay cash", "cod"], 
-      answer: "Yes, Cash on Delivery (COD) is supported for book purchases across all supported delivery locations." 
-    },
-    { 
-      keywords: ["how to order", "place order", "checkout process", "buy book", "how to buy"], 
-      answer: "Add your desired books to Cart -> Click 'Proceed to Order' -> Fill in Full Name, Email, City, Address -> Select Payment Method -> Confirm Payment." 
-    },
-    { 
-      keywords: ["track order", "order status", "where is my order", "track"], 
-      answer: "Navigate to the 'Track' tab in the top navigation bar and enter your Order ID (e.g., AWS-KECFVYUA) or registered email address." 
-    },
-    { 
-      keywords: ["return book", "refund process", "how to return", "return"], 
-      answer: "Go to your Cart page, scroll down to 'Return a Book', select the ordered item, and click 'Return'. Refund of the purchase price will be initiated." 
-    },
+const ANCIENT_WISDOM_QA_DATASET = [
+  // --- CATEGORY 1: BOOK RECOMMENDATIONS & SUGGESTIONS (30 Q&As) ---
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["beginner", "start coding", "c programming", "c++", "programming book", "learn code"],
+    question: "I'm a complete beginner in coding. Which book should I start with?",
+    answer: "We recommend 'Fundamentals of Programming' by Nithiyasree P (₹299). It is a beginner-friendly guide covering core concepts of C and C++ with step-by-step examples."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["data structures", "interview", "arrays", "trees", "graphs", "algorithm"],
+    question: "I want to learn Data Structures for coding interviews. What do you recommend?",
+    answer: "'Data Structures Simplified' (₹349) by Nithiyasree P is designed for interview prep, covering Arrays, Trees, and Graphs in simple, accessible terms."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["sql", "database", "er diagrams", "dbms"],
+    question: "Which book covers SQL and database design?",
+    answer: "'Database Management Essentials' (₹329) covers SQL queries, database fundamentals, and ER diagrams."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["distraction", "focus", "discipline", "college distraction"],
+    question: "I struggle with college distractions and lack of focus. What book can help?",
+    answer: "'Focus & Flourish' (₹229) by Nithiyasree P provides practical strategies for overcoming distractions and building daily discipline."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["student habits", "college success", "mindset", "power guide"],
+    question: "What is the best book for college students looking to build better habits?",
+    answer: "'The Student's Power Guide' (₹249) offers actionable advice on developing effective habits and a growth mindset for college success."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["goal setting", "dream plan achieve", "young minds", "goals"],
+    question: "I want to set clear goals for my career and personal growth. Which book should I buy?",
+    answer: "'Dream, Plan, Achieve' (₹269) focuses on structured goal-setting frameworks designed for young minds."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["honesty", "kindness", "courage", "moral stories", "virtues"],
+    question: "Which book teaches values, honesty, and kindness through stories?",
+    answer: "'Virtues of Life' (₹219) features inspiring stories centered on honesty, kindness, and courage."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["ethics", "ethical decisions", "right path", "decision making"],
+    question: "I need guidance on making ethical decisions in daily life. What do you recommend?",
+    answer: "'The Right Path' (₹239) provides practical insights into ethical decision-making and everyday moral choices."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["character", "integrity", "values", "character counts"],
+    question: "Which book helps build strong personal integrity and character?",
+    answer: "'Character Counts' (₹209) focuses on core principles for building strong personal values and integrity."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["tamil literature", "tamil language", "wisdom of tamil", "tamil mozhi amudam"],
+    question: "I love Tamil literature and want to appreciate its beauty. What book is best?",
+    answer: "'Tamil Mozhi Amudam' (₹199) highlights the linguistic beauty and timeless wisdom of the Tamil language."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["short moral stories tamil", "tamil tradition", "uyir ezhuthukal"],
+    question: "Are there short Tamil moral stories suitable for light reading?",
+    answer: "'Uyir Ezhuthukal' (₹189) contains short, moral stories rooted in Tamil tradition."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["inspirational verses", "vetri vazhi", "verses student life"],
+    question: "I need inspirational Tamil quotes and verses for students. What should I choose?",
+    answer: "'Vetri Vazhi' (₹179) features motivational verses tailored for student inspiration."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["cheapest book", "lowest price", "affordable book"],
+    question: "Which is the most affordable book in the entire store?",
+    answer: "'Vetri Vazhi' is our most affordable title at ₹179."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["highest price", "costliest book", "premium book"],
+    question: "Which is the highest-priced book in the store?",
+    answer: "'Data Structures Simplified' is our highest-priced book at ₹349."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["engineering category", "all engineering books", "tech books"],
+    question: "What are all the books available in the Engineering category?",
+    answer: "Our Engineering collection includes: 'Fundamentals of Programming' (₹299), 'Data Structures Simplified' (₹349), and 'Database Management Essentials' (₹329)."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["self improvement category", "all self help books"],
+    question: "What books belong to the Self Improvement category?",
+    answer: "Our Self Improvement section offers: 'The Student's Power Guide' (₹249), 'Focus & Flourish' (₹229), and 'Dream, Plan, Achieve' (₹269)."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["moral ethics category", "all moral books"],
+    question: "What books are listed under Moral & Ethics?",
+    answer: "Our Moral & Ethics section includes: 'Virtues of Life' (₹219), 'The Right Path' (₹239), and 'Character Counts' (₹209)."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["tamil literature category", "all tamil books"],
+    question: "What books are in the Tamil Literature section?",
+    answer: "Our Tamil Literature collection includes: 'Tamil Mozhi Amudam' (₹199), 'Uyir Ezhuthukal' (₹189), and 'Vetri Vazhi' (₹179)."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["author name", "who wrote", "book author", "nithiyasree"],
+    question: "Who is the author of all the books in Ancient Wisdom Store?",
+    answer: "All 12 books are written by author Nithiyasree P, a B.E. Computer Science & Engineering student at National Engineering College."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["engineering book under 300", "cheap tech book"],
+    question: "I want to buy an engineering book under ₹300. Which one qualifies?",
+    answer: "'Fundamentals of Programming' costs ₹299, fitting under your ₹300 budget."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["self improvement under 250", "budget self help"],
+    question: "I have ₹250. Which Self Improvement books can I buy?",
+    answer: "You can purchase 'Focus & Flourish' (₹229) or 'The Student's Power Guide' (₹249)."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["cheapest moral book", "lowest price ethics"],
+    question: "Which Moral & Ethics book is the cheapest?",
+    answer: "'Character Counts' is the lowest-priced book in Moral & Ethics at ₹209."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["cs combo", "computer science recommendation", "best duo"],
+    question: "Can you recommend a book combination for CS students?",
+    answer: "A solid combo is 'Fundamentals of Programming' (₹299) alongside 'Data Structures Simplified' (₹349)."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["c and c++", "c language", "cpp book"],
+    question: "Which book is best for learning C and C++ from scratch?",
+    answer: "'Fundamentals of Programming' (₹299) is tailored for learning C and C++ basics from scratch."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["er diagram book", "database design"],
+    question: "Is there a book that teaches ER diagrams?",
+    answer: "Yes, 'Database Management Essentials' (₹329) covers ER diagrams and relational query concepts."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["young minds goal", "dream plan"],
+    question: "Which book focuses on goal setting for young minds?",
+    answer: "'Dream, Plan, Achieve' (₹269) focuses on helping young minds set and execute goals."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["stories courage", "stories honesty"],
+    question: "Which book contains stories on honesty and courage?",
+    answer: "'Virtues of Life' (₹219) contains curated stories emphasizing honesty, courage, and kindness."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["tamil quotes book", "inspirational verse tamil"],
+    question: "I want a Tamil book with inspirational verses. Which one is it?",
+    answer: "'Vetri Vazhi' (₹179) features motivational verses written in Tamil for student growth."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["college success mindset", "student guide duo"],
+    question: "Which books can I read if I want to improve my mindset for college success?",
+    answer: "'The Student's Power Guide' (₹249) and 'Focus & Flourish' (₹229) support college success."
+  },
+  {
+    category: "Book Recommendations & Suggestions",
+    keywords: ["format options", "digital vs physical", "reading formats"],
+    question: "Are all books in the store physical books or can they be read online?",
+    answer: "All 12 books can be ordered as physical copies or rented for online digital reading."
+  },
 
-    // --- CATEGORY 3: ONLINE RENTALS & TIMER ACCESS ---
-    { 
-      keywords: ["how rental works", "online reading", "digital rental", "rent", "rental", "renting"], 
-      answer: "The rental feature allows digital reading with timed access. Rates start from ₹18–₹35/hr or ₹36–₹70/day. Once rented, your countdown timer starts when you open the online reader." 
-    },
-    { 
-      keywords: ["premium plan price", "monthly fee", "premium cost", "premium plan"], 
-      answer: "A Premium Account costs ₹199/month and unlocks online book rentals and reader timer access." 
-    },
+  // --- CATEGORY 2: PURCHASING, ORDERS & PAYMENTS (20 Q&As) ---
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["payment methods", "how to pay", "accepted payments"],
+    question: "What payment methods are accepted at Ancient Wisdom Store?",
+    answer: "We accept Cash on Delivery (COD), Google Pay, PhonePe, UPI (Paytm/BHIM), Debit/Credit Cards, and Net Banking."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["cash on delivery", "cod available", "pay cash"],
+    question: "Can I pay cash when my book is delivered?",
+    answer: "Yes, Cash on Delivery (COD) is supported for book purchases across all supported delivery locations."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["how to order", "place order", "checkout process"],
+    question: "How do I place an order on the website?",
+    answer: "Add your desired books to Cart -> Click 'Proceed to Order' -> Fill in Full Name, Email, City, Address -> Select Payment Method -> Confirm Payment."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["track order", "order status", "where is my order"],
+    question: "How do I track my order after purchase?",
+    answer: "Navigate to the 'Track' tab in the top navigation bar and enter your Order ID (e.g., AWS-KECFVYUA) or registered email address."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["return book", "refund process", "how to return"],
+    question: "How can I return a book I purchased?",
+    answer: "Go to your Cart page, scroll down to 'Return a Book', select the ordered item, and click 'Return'. Refund of the purchase price will be initiated."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["refund time", "days for refund", "money back"],
+    question: "How long does a refund take after returning a book?",
+    answer: "Refunds are processed within 3 to 5 business days back to your original payment method."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["order id location", "find order id"],
+    question: "Where can I find my Order ID?",
+    answer: "Your Order ID is generated on the checkout success screen and listed under 'My Orders' in your Account dashboard."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["order without account", "guest checkout"],
+    question: "Can I buy books without creating an account?",
+    answer: "You can browse and checkout, but creating an account lets you track order stages and earn reward tokens."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["checkout form fields", "required details"],
+    question: "What details do I need to enter during checkout?",
+    answer: "You must enter your Full Name, Email Address, City, and complete Delivery Address."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["gpay payment", "google pay"],
+    question: "Is Google Pay available for payment?",
+    answer: "Yes, select 'Google Pay' in the payment options and enter your transaction reference ID to complete payment."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["phonepe payment", "phonepe upi"],
+    question: "Can I pay using PhonePe?",
+    answer: "Yes, select PhonePe in the payment modal, send the payment to merchant@phonepe, and submit your Transaction ID."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["supported cards", "debit card", "credit card"],
+    question: "Which debit/credit cards are supported?",
+    answer: "We support Visa, Mastercard, RuPay, and American Express debit and credit cards."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["net banking", "supported banks"],
+    question: "Is Net Banking supported for major Indian banks?",
+    answer: "Yes, Net Banking is supported for major banks including SBI, HDFC, ICICI, Axis, Canara, and Bank of India."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["order confirmation", "receipt"],
+    question: "Will I receive a confirmation when my order is placed?",
+    answer: "Yes, an order placement screen appears immediately displaying your Order ID, reference number, and earned tokens."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["multiple books", "bulk order"],
+    question: "Can I order multiple books at once?",
+    answer: "Yes, add multiple books to your Cart and checkout in a single payment transaction."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["remove item cart", "delete item"],
+    question: "How do I remove an item from my cart before ordering?",
+    answer: "Open the Cart tab and click the 'Remove' button next to the book item you wish to delete."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["view wishlist", "saved books"],
+    question: "How do I view items saved in my wishlist?",
+    answer: "Go to the Cart tab and scroll down to view all items currently saved in your Wishlist."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["wrong address", "change delivery address"],
+    question: "What should I do if I enter the wrong delivery address?",
+    answer: "Reach out immediately to 25104016@nec.edu.in with your Order ID to update your delivery address before dispatch."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["tokens on purchase", "earn points"],
+    question: "Do I get reward tokens on every purchase?",
+    answer: "Yes, you earn 1 Token for every ₹100 spent on book purchases."
+  },
+  {
+    category: "Purchasing, Orders & Payments",
+    keywords: ["tracking stages", "order statuses"],
+    question: "What order tracking statuses are shown?",
+    answer: "The track order pipeline displays four stages: Ordered, Packed, Shipped, and Delivered."
+  },
 
-    // --- CATEGORY 4: TOKENS, CREDITS & FREE BOOK REWARDS ---
-    { 
-      keywords: ["how to earn tokens", "token calculation", "token", "tokens", "earn tokens"], 
-      answer: "You earn 1 Token for every ₹100 spent on book orders." 
-    },
-    { 
-      keywords: ["redeem tokens free book", "get free book", "redeem tokens", "free book"], 
-      answer: "Go to the 'Tokens' tab, check your balance, and click 'Redeem' next to any eligible book (requires 50, 75, or 100 Tokens)." 
-    },
+  // --- CATEGORY 3: ONLINE RENTALS & TIMER ACCESS (20 Q&As) ---
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["how rental works", "online reading", "digital rental"],
+    question: "How does the online book rental system work?",
+    answer: "The rental feature allows digital reading with timed access. Once rented, your countdown timer starts when you open the online reader."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rental account requirement", "premium plan needed"],
+    question: "Do I need a specific plan to rent books online?",
+    answer: "Yes, renting books online requires an active Premium Account subscription."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["premium plan price", "monthly fee"],
+    question: "How much does a Premium Account cost?",
+    answer: "A Premium Account costs ₹199/month and unlocks online book rentals and reader timer access."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rental durations", "how long rent"],
+    question: "What are the rental durations available?",
+    answer: "Rentals are available for 1 Hour, 1 Day, and 3 Days."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent fundamentals of programming", "programming rent rate"],
+    question: "What is the hourly rental rate for 'Fundamentals of Programming'?",
+    answer: "'Fundamentals of Programming' rents for ₹30/hour or ₹60/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent data structures", "dsa rental price"],
+    question: "What is the rental price for 'Data Structures Simplified'?",
+    answer: "'Data Structures Simplified' rents for ₹35/hour or ₹70/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent database essentials", "dbms rental fee"],
+    question: "How much does it cost to rent 'Database Management Essentials'?",
+    answer: "'Database Management Essentials' rents for ₹33/hour or ₹66/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent student power guide"],
+    question: "What is the hourly rental rate for 'The Student's Power Guide'?",
+    answer: "'The Student's Power Guide' rents for ₹25/hour or ₹50/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent focus flourish"],
+    question: "How much is the rental fee for 'Focus & Flourish'?",
+    answer: "'Focus & Flourish' rents for ₹23/hour or ₹46/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent dream plan achieve"],
+    question: "What is the rental rate for 'Dream, Plan, Achieve'?",
+    answer: "'Dream, Plan, Achieve' rents for ₹27/hour or ₹54/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent virtues of life"],
+    question: "What is the rental price for 'Virtues of Life'?",
+    answer: "'Virtues of Life' rents for ₹22/hour or ₹44/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent right path"],
+    question: "How much does it cost to rent 'The Right Path'?",
+    answer: "'The Right Path' rents for ₹24/hour or ₹48/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent character counts"],
+    question: "What is the rental rate for 'Character Counts'?",
+    answer: "'Character Counts' rents for ₹21/hour or ₹42/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent tamil mozhi amudam"],
+    question: "What is the rental fee for 'Tamil Mozhi Amudam'?",
+    answer: "'Tamil Mozhi Amudam' rents for ₹20/hour or ₹40/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rent uyir ezhuthukal"],
+    question: "How much is renting 'Uyir Ezhuthukal'?",
+    answer: "'Uyir Ezhuthukal' rents for ₹19/hour or ₹38/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["cheapest rental rate", "lowest rent"],
+    question: "What is the cheapest book rental rate per hour?",
+    answer: "'Vetri Vazhi' offers our lowest rental rate at ₹18/hour or ₹36/day."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["when timer starts", "countdown start"],
+    question: "When does the rental countdown timer start?",
+    answer: "The countdown timer begins the moment you open the book viewer modal in the Rent tab."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["rental time expired", "timer zero"],
+    question: "What happens when my rental time expires?",
+    answer: "An overlay appears indicating time expired. You can extend your duration or re-rent to continue reading."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["active rentals list", "view rented books"],
+    question: "Where can I see my active book rentals?",
+    answer: "Logged-in Premium users can view active rentals under 'My Active Rentals' in the Rent tab."
+  },
+  {
+    category: "Online Rentals & Timer Access",
+    keywords: ["open reader", "read rented book"],
+    question: "How do I read a rented book?",
+    answer: "Go to the Rent section, locate your active item under 'My Active Rentals', and click the blue 'READ' button."
+  },
 
-    // --- CATEGORY 5: SEARCH, BROWSING & GENERAL STORE INQUIRIES ---
-    { 
-      keywords: ["site author", "who built site", "nithiyasree p", "author", "creator", "owner", "who wrote"], 
-      answer: "Ancient Wisdom Store was created and authored by Nithiyasree P, a B.E. Computer Science & Engineering student at National Engineering College (Roll No: 25104016)." 
-    },
-    { 
-      keywords: ["contact info", "email author", "phone number", "contact"], 
-      answer: "You can reach Nithiyasree P via Email at 25104016@nec.edu.in or by Phone at +91 98765 43210." 
-    }
-  ];
+  // --- CATEGORY 4: TOKENS, CREDITS & FREE BOOK REWARDS (15 Q&As) ---
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["how to earn tokens", "token calculation"],
+    question: "How do I earn tokens at Ancient Wisdom Store?",
+    answer: "You earn 1 Token for every ₹100 spent on book orders."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["tokens for 299", "earned tokens calculation"],
+    question: "How many tokens do I get for spending ₹299?",
+    answer: "Spending ₹299 earns you 2 Tokens (calculated on completed hundreds)."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["redeem tokens free book", "get free book"],
+    question: "How can I redeem my tokens for free books?",
+    answer: "Go to the 'Tokens' tab, check your balance, and click 'Redeem' next to any eligible book."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["tokens fundamentals programming", "50 tokens book"],
+    question: "How many tokens are required to redeem 'Fundamentals of Programming' for free?",
+    answer: "50 Tokens are required to redeem 'Fundamentals of Programming' for free."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["tokens focus flourish"],
+    question: "How many tokens do I need for a free copy of 'Focus & Flourish'?",
+    answer: "50 Tokens are required to redeem 'Focus & Flourish'."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["tokens virtues of life"],
+    question: "What is the token cost to redeem 'Virtues of Life'?",
+    answer: "50 Tokens are required for 'Virtues of Life'."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["tokens uyir ezhuthukal", "75 tokens book"],
+    question: "How many tokens are needed for 'Uyir Ezhuthukal'?",
+    answer: "75 Tokens are required to redeem 'Uyir Ezhuthukal'."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["tokens data structures"],
+    question: "How many tokens does 'Data Structures Simplified' require for free redemption?",
+    answer: "75 Tokens are required to redeem 'Data Structures Simplified'."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["tokens vetri vazhi", "100 tokens book"],
+    question: "How many tokens are required for 'Vetri Vazhi'?",
+    answer: "100 Tokens are required to redeem 'Vetri Vazhi'."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["check token balance", "my tokens"],
+    question: "Where can I check my current token balance?",
+    answer: "Check your balance at any time by clicking the 'Tokens' tab in the top navigation bar."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["normal account earn tokens"],
+    question: "Can Normal (Free) account holders earn tokens?",
+    answer: "Yes! Normal (Free) account holders earn tokens on every purchase."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["token history", "view past tokens"],
+    question: "Where can I view my token transaction history?",
+    answer: "Scroll down to 'Token History' at the bottom of the Tokens page to view earned tokens and past redemptions."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["do tokens expire", "token validity"],
+    question: "Do tokens expire?",
+    answer: "No, tokens do not expire and remain in your balance until redeemed."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["partial token payment", "cash plus tokens"],
+    question: "Can I combine tokens with cash to buy a book?",
+    answer: "Tokens are used in full redemption thresholds (50, 75, or 100 Tokens) for complete book redemption."
+  },
+  {
+    category: "Tokens, Credits & Free Book Rewards",
+    keywords: ["minimum tokens free book"],
+    question: "What is the minimum token balance needed to redeem any free book?",
+    answer: "The minimum threshold is 50 Tokens, which unlocks titles like 'Fundamentals of Programming', 'Focus & Flourish', or 'Virtues of Life'."
+  },
 
-  // =========================================================================
-  // 2. ENHANCED MATCHING & SCORING ENGINE (Includes partial word matching)
-  // =========================================================================
-  function queryAncientWisdomAI(userPrompt) {
-    if (!userPrompt || userPrompt.trim() === "") {
-      return "Please ask a question about books, prices, rentals, tokens, or store details!";
-    }
+  // --- CATEGORY 5: SEARCH, BROWSING & GENERAL STORE INQUIRIES (15 Q&As) ---
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["site author", "who built site", "nithiyasree p"],
+    question: "Who created the Ancient Wisdom Store website and authored all books?",
+    answer: "Ancient Wisdom Store was created and authored by Nithiyasree P, a B.E. Computer Science & Engineering student at National Engineering College."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["roll number", "author roll no", "college id"],
+    question: "What is the college registration / Roll No of author Nithiyasree P?",
+    answer: "Author Nithiyasree P's Roll Number is 25104016."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["contact info", "email author", "phone number"],
+    question: "How can I contact the store author or owner?",
+    answer: "You can reach Nithiyasree P via Email at 25104016@nec.edu.in or by Phone at +91 98765 43210."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["filter category", "category dropdown"],
+    question: "How do I filter books by category on the website?",
+    answer: "On the Books tab, use the category dropdown selector to filter by Engineering, Self Improvement, Moral & Ethics, or Tamil Literature."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["search box", "find book title"],
+    question: "Can I search for a specific book by title?",
+    answer: "Yes, type any keyword or book title into the search box at the top of the Books Collection page."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["all categories list", "book genres"],
+    question: "What categories of books are available in the store?",
+    answer: "We offer 4 categories: Engineering, Self Improvement, Moral & Ethics, and Tamil Literature."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["normal vs premium", "account plans"],
+    question: "What is the difference between a Normal Account and a Premium Account?",
+    answer: "Normal Plan is free (buy books, wishlist, earn tokens). Premium Plan (₹199/mo) unlocks online digital book rentals and timed reader access."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["register account", "create user"],
+    question: "How do I register a new account on Ancient Wisdom Store?",
+    answer: "Click the 'Account' tab -> Select 'Register' -> Enter Username, Email, Password -> Choose Normal or Premium -> Click 'Create Account'."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["upgrade plan", "switch plan"],
+    question: "How do I switch between Normal and Premium plans?",
+    answer: "Navigate to Account dashboard or click 'Upgrade to Premium' inside the Rent tab."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["change password", "update password"],
+    question: "How do I change my account password?",
+    answer: "Log into your Account dashboard, scroll to 'Change Password', enter your Current Password and New Password, and click 'Update Password'."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["about page", "author bio"],
+    question: "Where can I read about the author's background and skills?",
+    answer: "Click on the 'About' tab in the top navigation bar to view Nithiyasree P's academic profile, technical skills, and hobbies."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["author skills", "programming languages"],
+    question: "What programming skills does author Nithiyasree P have?",
+    answer: "Nithiyasree P is skilled in C, C++, Python, HTML, CSS, JavaScript, and SQL."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["author hobbies", "interests"],
+    question: "What are the hobbies of author Nithiyasree P?",
+    answer: "Her hobbies include Reading, Drawing, Music, and Coding."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["mobile responsive", "phone navigation"],
+    question: "Is the Ancient Wisdom Store mobile responsive?",
+    answer: "Yes, the site features a responsive layout and a hamburger navigation drawer for mobile devices."
+  },
+  {
+    category: "Search, Browsing & General Store Inquiries",
+    keywords: ["wishlist book", "add to wish"],
+    question: "How do I add a book to my Wishlist?",
+    answer: "Click the '♡ Wish' button on any book card in the Books Collection."
+  }
+];
 
-    const cleanPrompt = userPrompt.toLowerCase().replace(/[^\w\s]/gi, '');
-    const promptWords = cleanPrompt.split(/\s+/);
+// =========================================================================
+// AI MATCHING ENGINE & CHATBOT RESPONSE GENERATOR
+// Performs dynamic fuzzy keyword search and intent scoring
+// =========================================================================
 
-    let bestMatch = null;
-    let maxScore = 0;
+function queryAncientWisdomAI(userPrompt) {
+  if (!userPrompt || userPrompt.trim() === "") {
+    return "Please ask a question about books, prices, rentals, tokens, or store details!";
+  }
 
-    ANCIENT_WISDOM_QA_DATASET.forEach(item => {
-      let score = 0;
+  const cleanPrompt = userPrompt.toLowerCase().replace(/[^\w\s]/gi, '');
+  const promptWords = cleanPrompt.split(/\s+/);
 
-      item.keywords.forEach(kw => {
-        const cleanKw = kw.toLowerCase();
+  let bestMatch = null;
+  let maxScore = 0;
 
-        // 1. Exact phrase match
-        if (cleanPrompt.includes(cleanKw)) {
-          score += 6;
-        }
+  ANCIENT_WISDOM_QA_DATASET.forEach(item => {
+    let score = 0;
 
-        // 2. Substring/Partial match (e.g., "paymethods" containing "pay" or "method")
+    item.keywords.forEach(kw => {
+      if (cleanPrompt.includes(kw.toLowerCase())) {
+        score += 5; // Exact keyphrase match
+      }
+      
+      const kwWords = kw.toLowerCase().split(/\s+/);
+      kwWords.forEach(kwWord => {
         promptWords.forEach(pWord => {
-          if (pWord.length >= 3 && (cleanKw.includes(pWord) || pWord.includes(cleanKw))) {
-            score += 3;
+          if (pWord === kwWord && pWord.length > 2) {
+            score += 2; // Individual word match
           }
         });
       });
-
-      if (score > maxScore) {
-        maxScore = score;
-        bestMatch = item;
-      }
     });
 
-    // Lowered threshold to 2 so single-word queries hit accurately
-    if (maxScore >= 2 && bestMatch) {
-      return bestMatch.answer;
+    if (score > maxScore) {
+      maxScore = score;
+      bestMatch = item;
     }
+  });
 
-    return "Welcome to <strong>Ancient Wisdom Store</strong> by Nithiyasree P! I can answer questions about our 12 books, prices, online rentals (₹18-₹35/hr), ₹199/mo Premium Plan, earning tokens (₹100 = 1 token), payment options (COD/UPI/Cards), or order tracking. How can I help you today?";
+  if (maxScore > 2 && bestMatch) {
+    return bestMatch.answer;
   }
+
+  // Fallback context response if exact match score is low
+  return "Welcome to <strong>Ancient Wisdom Store</strong> by Nithiyasree P! I can answer questions about our 12 books, prices, online rentals (₹18-₹35/hr), ₹199/mo Premium Plan, earning tokens (₹100 = 1 token), payment options (COD/UPI/Cards), or order tracking. How can I help you today?";
+}
 </script>
 </body>
 </html>
