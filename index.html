@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Home | Ancient Wisdom Store</title>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://js.puter.com/v2/"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 </head>
@@ -686,60 +687,29 @@
   }
 </style>
 
-  <!-- Load Open-Source WebLLM Engine via CDN -->
-<script type="module">
-  import * as webllm from "https://esm.run/@mlc-ai/web-llm";
-
-  // Select an open-source model (e.g., Llama-3-8B or Qwen2)
-  const SELECTED_MODEL = "Llama-3.8B-Instruct-q4f16_1-MLC";
-  let engine = null;
-
-  window.toggleAwsChat = function() {
+<script>
+  function toggleAwsChat() {
     const win = document.getElementById('aws-chat-window');
     win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
-    if (!engine) initEngine();
   }
 
-  window.handleAwsKeyPress = function(e) {
+  function handleAwsKeyPress(e) {
     if (e.key === 'Enter') sendAwsMessage();
   }
 
-  // Read current page text dynamically as store context
+  // Reads current page text dynamically as store context
   function getLiveStoreContext() {
-    return document.body.innerText.replace(/\s+/g, ' ').slice(0, 1500); 
+    return document.body.innerText.replace(/\s+/g, ' ').slice(0, 1800); 
   }
 
-  // Initialize the open-source model engine
-  async function initEngine() {
-    const body = document.getElementById('aws-chat-body');
-    const initDiv = document.createElement('div');
-    initDiv.className = 'aws-msg aws-bot-msg';
-    initDiv.id = 'engine-status';
-    initDiv.innerHTML = "<em>Loading local open-source AI engine... Please wait.</em>";
-    body.appendChild(initDiv);
-
-    try {
-      // Initialize model engine inside client browser using WebGPU
-      engine = await webllm.CreateMLCEngine(SELECTED_MODEL, {
-        initProgressCallback: (report) => {
-          document.getElementById('engine-status').innerHTML = `<em>${report.text}</em>`;
-        }
-      });
-      document.getElementById('engine-status').innerHTML = "Hello! 👋 I am your open-source AI Assistant. Ask me anything about the store!";
-    } catch (err) {
-      console.error(err);
-      document.getElementById('engine-status').innerHTML = "WebGPU is required to run local LLMs. Please use Chrome/Edge or enable WebGPU.";
-    }
-  }
-
-  window.sendAwsMessage = async function() {
+  async function sendAwsMessage() {
     const input = document.getElementById('aws-chat-input');
     const text = input.value.trim();
     if (!text) return;
 
     const body = document.getElementById('aws-chat-body');
     
-    // User message
+    // Render User Message
     const userDiv = document.createElement('div');
     userDiv.className = 'aws-msg aws-user-msg';
     userDiv.textContent = text;
@@ -748,43 +718,44 @@
     input.value = '';
     body.scrollTop = body.scrollHeight;
 
-    // Bot response holder
+    // Render AI Loading Placeholder
     const botDiv = document.createElement('div');
     botDiv.className = 'aws-msg aws-bot-msg';
-    botDiv.innerHTML = "<em>Generating response...</em>";
+    botDiv.innerHTML = "<em>AI is generating response... ✨</em>";
     body.appendChild(botDiv);
     body.scrollTop = body.scrollHeight;
-
-    if (!engine) {
-      botDiv.innerHTML = "Engine is still loading, please try again in a moment.";
-      return;
-    }
 
     try {
       const storeContext = getLiveStoreContext();
 
-      // Send prompt to local open-source engine
-      const messages = [
-        { role: "system", content: `You are the AI assistant for Ancient Wisdom Store created by Nithiyasree P. Use this context: ${storeContext}` },
-        { role: "user", content: text }
-      ];
+      // Free Puter.js AI Call (No API Keys / No Payment Required)
+      const prompt = `System: You are the AI Assistant for 'Ancient Wisdom Store', created by Nithiyasree P.
+Answer customer queries accurately using this live store catalog data:
+${storeContext}
 
-      const chunks = await engine.chat.completions.create({
-        messages,
-        stream: true
-      });
+User Question: ${text}`;
 
-      let replyText = "";
-      for await (const chunk of chunks) {
-        replyText += chunk.choices[0]?.delta?.content || "";
-        botDiv.innerHTML = replyText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-        body.scrollTop = body.scrollHeight;
+      const response = await puter.ai.chat(prompt);
+
+      if (response && response.message && response.message.content) {
+        let rawText = response.message.content;
+
+        // Format Markdown bold and linebreaks into clean HTML
+        let formatted = rawText
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>');
+
+        botDiv.innerHTML = formatted;
+      } else {
+        botDiv.innerHTML = "I am here to assist you with book details, rentals, and token offers!";
       }
 
     } catch (err) {
-      console.error(err);
-      botDiv.innerHTML = "An error occurred while generating the response.";
+      console.error("Puter AI Error:", err);
+      botDiv.innerHTML = "Welcome to Ancient Wisdom Store! How can I assist you today?";
     }
+
+    body.scrollTop = body.scrollHeight;
   }
 </script>
   
