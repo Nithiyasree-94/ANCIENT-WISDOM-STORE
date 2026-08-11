@@ -693,6 +693,14 @@
 // ANCIENT WISDOM STORE - DYNAMIC AI CHATBOT SYSTEM WITH 100+ Q&A KNOWLEDGE BASE
 // Created by: Nithiyasree P (Roll No: 25104016, National Engineering College)
 // =========================================================================
+  function toggleAwsChat() {
+    const win = document.getElementById('aws-chat-window');
+    win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
+  }
+
+  function handleAwsKeyPress(e) {
+    if (e.key === 'Enter') sendAwsMessage();
+  }
 
 const ANCIENT_WISDOM_QA_DATASET = [
   // --- CATEGORY 1: BOOK RECOMMENDATIONS & SUGGESTIONS (30 Q&As) ---
