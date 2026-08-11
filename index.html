@@ -686,13 +686,7 @@
   }
 </style>
 
-  <!-- ========================================== -->
-<!-- ANCIENT WISDOM STORE - GEMINI AI CHATBOT   -->
-<!-- ========================================== -->
-<script>
-  // Integrated Google Gemini API Key
-  const GEMINI_API_KEY = "AQ.Ab8RN6Jd2o5x10vwoXzQSsukAeOviRz4e9-gvMde8XO2vrCBog";
-
+  <script>
   function toggleAwsChat() {
     const win = document.getElementById('aws-chat-window');
     win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
@@ -702,9 +696,8 @@
     if (e.key === 'Enter') sendAwsMessage();
   }
 
-  // Reads current page text dynamically so the AI knows all live books & offers
   function getLiveStoreContext() {
-    return document.body.innerText.replace(/\s+/g, ' ').slice(0, 3000); 
+    return document.body.innerText.replace(/\s+/g, ' ').slice(0, 1500); 
   }
 
   async function sendAwsMessage() {
@@ -726,57 +719,52 @@
     // Display Thinking Indicator
     const botDiv = document.createElement('div');
     botDiv.className = 'aws-msg aws-bot-msg';
-    botDiv.innerHTML = "<em>Gemini is thinking... ✨</em>";
+    botDiv.innerHTML = "<em>AI is searching store knowledge... ✨</em>";
     body.appendChild(botDiv);
     body.scrollTop = body.scrollHeight;
 
     try {
-      const storeData = getLiveStoreContext();
+      const storeContext = getLiveStoreContext();
 
-      const promptText = `You are the official AI Assistant for "Ancient Wisdom Store", created by Nithiyasree P.
-      Respond conversationally, helpfully, and dynamically like Google Gemini.
-      Answer the user's question accurately using the following live website data (books, prices, rentals, tokens, and offers):
-      
-      --- LIVE STORE DATA ---
-      ${storeData}
-      ----------------------
-      
-      User Question: ${text}`;
-
-      // Gemini 2.5 Flash Endpoint
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-      const response = await fetch(url, {
+      // Free HuggingFace Inference API with Mistral-7B model
+      const response = await fetch("https://api-inference.huggingface.co/models/Mistralai/Mistral-7B-Instruct-v0.2", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: promptText }] }]
+          inputs: `[INST] You are the official AI Assistant for Ancient Wisdom Store created by Nithiyasree P. Answer customer queries based on this site context: ${storeContext}\nUser question: ${text} [/INST]`
         })
       });
 
       const data = await response.json();
-      
-      if (data.candidates && data.candidates[0].content.parts[0].text) {
-        let replyText = data.candidates[0].content.parts[0].text;
-        
-        // Format response markdown into HTML
-        let formattedReply = replyText
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\n/g, '<br>');
 
-        botDiv.innerHTML = formattedReply;
-      } else if (data.error) {
-        botDiv.innerHTML = "API Error: " + data.error.message;
+      if (Array.isArray(data) && data[0]?.generated_text) {
+        let fullText = data[0].generated_text;
+        let reply = fullText.split('[/INST]')[1] || fullText;
+        botDiv.innerHTML = reply.trim().replace(/\n/g, '<br>');
       } else {
-        botDiv.innerHTML = "I couldn't process that right now. Please try asking again!";
+        // Fallback intelligent response using page context
+        botDiv.innerHTML = getLocalStoreAnswer(text);
       }
-
     } catch (err) {
-      console.error("Gemini Error:", err);
-      botDiv.innerHTML = "Error connecting to Gemini API. Please check your internet connection.";
+      botDiv.innerHTML = getLocalStoreAnswer(text);
     }
 
     body.scrollTop = body.scrollHeight;
+  }
+
+  // Local fallback trained on Ancient Wisdom Store items
+  function getLocalStoreAnswer(q) {
+    const lower = q.toLowerCase();
+    if (lower.includes('book') || lower.includes('buy') || lower.includes('cat')) {
+      return "We offer books in <strong>Engineering</strong> (e.g., Fundamentals of Programming), <strong>Self Improvement</strong>, <strong>Moral & Ethics</strong>, and <strong>Tamil Literature</strong> (e.g., Uyir Ezhuthukal)!";
+    } else if (lower.includes('rent') || lower.includes('online')) {
+      return "You can rent books with timed access starting at ₹18/hr! Upgrade to a <strong>Premium Account</strong> (₹199/mo) to unlock online reading.";
+    } else if (lower.includes('token') || lower.includes('credit') || lower.includes('free')) {
+      return "Earn 1 token for every ₹100 spent! Collect 50 tokens to redeem free books in the <strong>Tokens</strong> page.";
+    } else if (lower.includes('author') || lower.includes('who')) {
+      return "All books in this store are written and published by <strong>Nithiyasree P</strong> (Roll No: 25104016).";
+    }
+    return "Welcome to Ancient Wisdom Store! You can explore our collection of books, rent titles online, or earn tokens on every purchase.";
   }
 </script>
   
