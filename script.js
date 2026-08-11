@@ -1,3 +1,8 @@
+// Local testing:
+const BACKEND_URL = "http://localhost:3000/api/chat";
+
+// Production deployment (e.g., Render, Vercel, Railway):
+// const BACKEND_URL = "https://your-backend-domain.com/api/chat";
 var DB = {
   cart:[], wish:[], orders:[], returns:[], rents:[],
   tokens:{balance:0, spent:0, history:[]},
@@ -662,3 +667,49 @@ function fmtTime(ms){
 function pad(n){ return n<10?'0'+n:''+n; }
 
 window.addEventListener('DOMContentLoaded', function(){ G('home'); });
+const express = require("express");
+const cors = require("cors");
+const { OpenAI } = require("openai");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const STORE_SYSTEM_PROMPT = `You are the official AI Assistant for 'Ancient Wisdom Store', created by author Nithiyasree P.
+Use the following store details to assist customers:
+- Author: Nithiyasree P
+- Books: Fundamentals of Programming (₹299), Data Structures Simplified (₹349), Database Management Essentials (₹329), The Student's Power Guide (₹249), Focus & Flourish (₹229), Dream Plan Achieve (₹269), Virtues of Life (₹219), The Right Path (₹239), Character Counts (₹209), Tamil Mozhi Amudam (₹199), Uyir Ezhuthukal (₹189), Vetri Vazhi (₹179).
+- Rentals: Requires Premium Plan (₹199/month). Timed online reading access.
+- Tokens: ₹100 spent = 1 Token. Collect 50-100 tokens to redeem free books.`;
+
+app.post("/api/chat", async (req, res) => {
+  const { messages } = req.body;
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  try {
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "system", content: STORE_SYSTEM_PROMPT }, ...messages],
+      stream: true,
+    });
+
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content || "";
+      if (delta) {
+        res.write(`data: ${JSON.stringify({ delta })}\n\n`);
+      }
+    }
+    res.end();
+  } catch (error) {
+    console.error("Backend Chat Error:", error);
+    res.write(`data: ${JSON.stringify({ error: true })}\n\n`);
+    res.end();
+  }
+});
+
+app.listen(3000, () => console.log("Ancient Wisdom Chatbot Backend running on port 3000"));
