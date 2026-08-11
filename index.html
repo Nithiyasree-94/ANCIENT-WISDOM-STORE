@@ -559,8 +559,9 @@
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="script.js"></script>
-  <!-- ========================================== -->
-<!-- ANCIENT WISDOM STORE - AI CHATBOT SYSTEM  -->
+
+<!-- ========================================== -->
+<!-- ANCIENT WISDOM STORE - AI CHATBOT UI      -->
 <!-- ========================================== -->
 <div id="aws-chatbot-container">
   <button id="aws-chat-toggle" onclick="toggleAwsChat()">💬 AI Assistant</button>
@@ -685,8 +686,150 @@
     font-weight: bold;
   }
 </style>
-<script src="ancient-wisdom-chatbot.js"></script>
-</body>
-</html>
+
+<!-- ANCIENT WISDOM STORE - DYNAMIC 100+ Q&A AI CHATBOT SYSTEM -->
+<script>
+  // =========================================================================
+  // 1. 100+ Q&A KNOWLEDGE BASE DATASET
+  // =========================================================================
+  const ANCIENT_WISDOM_QA_DATASET = [
+    // --- CATEGORY 1: BOOK RECOMMENDATIONS & SUGGESTIONS ---
+    { keywords: ["beginner", "start coding", "c programming", "c++", "programming book", "learn code"], answer: "We recommend 'Fundamentals of Programming' by Nithiyasree P (₹299). It is a beginner-friendly guide covering core concepts of C and C++ with step-by-step examples." },
+    { keywords: ["data structures", "interview", "arrays", "trees", "graphs", "algorithm"], answer: "'Data Structures Simplified' (₹349) by Nithiyasree P is designed for interview prep, covering Arrays, Trees, and Graphs in simple, accessible terms." },
+    { keywords: ["sql", "database", "er diagrams", "dbms"], answer: "'Database Management Essentials' (₹329) covers SQL queries, database fundamentals, and ER diagrams." },
+    { keywords: ["distraction", "focus", "discipline", "college distraction"], answer: "'Focus & Flourish' (₹229) by Nithiyasree P provides practical strategies for overcoming distractions and building daily discipline." },
+    { keywords: ["student habits", "college success", "mindset", "power guide"], answer: "'The Student's Power Guide' (₹249) offers actionable advice on developing effective habits and a growth mindset for college success." },
+    { keywords: ["goal setting", "dream plan achieve", "young minds", "goals"], answer: "'Dream, Plan, Achieve' (₹269) focuses on structured goal-setting frameworks designed for young minds." },
+    { keywords: ["honesty", "kindness", "courage", "moral stories", "virtues"], answer: "'Virtues of Life' (₹219) features inspiring stories centered on honesty, kindness, and courage." },
+    { keywords: ["ethics", "ethical decisions", "right path", "decision making"], answer: "'The Right Path' (₹239) provides practical insights into ethical decision-making and everyday moral choices." },
+    { keywords: ["character", "integrity", "values", "character counts"], answer: "'Character Counts' (₹209) focuses on core principles for building strong personal values and integrity." },
+    { keywords: ["tamil literature", "tamil language", "wisdom of tamil", "tamil mozhi amudam"], answer: "'Tamil Mozhi Amudam' (₹199) highlights the linguistic beauty and timeless wisdom of the Tamil language." },
+    { keywords: ["short moral stories tamil", "tamil tradition", "uyir ezhuthukal"], answer: "'Uyir Ezhuthukal' (₹189) contains short, moral stories rooted in Tamil tradition." },
+    { keywords: ["inspirational verses", "vetri vazhi", "verses student life"], answer: "'Vetri Vazhi' (₹179) features motivational verses tailored for student inspiration." },
+    { keywords: ["cheapest book", "lowest price", "affordable book"], answer: "'Vetri Vazhi' is our most affordable title at ₹179." },
+    { keywords: ["highest price", "costliest book", "premium book"], answer: "'Data Structures Simplified' is our highest-priced book at ₹349." },
+    { keywords: ["engineering category", "all engineering books", "tech books"], answer: "Our Engineering collection includes: 'Fundamentals of Programming' (₹299), 'Data Structures Simplified' (₹349), and 'Database Management Essentials' (₹329)." },
+    { keywords: ["self improvement category", "all self help books"], answer: "Our Self Improvement section offers: 'The Student's Power Guide' (₹249), 'Focus & Flourish' (₹229), and 'Dream, Plan, Achieve' (₹269)." },
+    { keywords: ["moral ethics category", "all moral books"], answer: "Our Moral & Ethics section includes: 'Virtues of Life' (₹219), 'The Right Path' (₹239), and 'Character Counts' (₹209)." },
+    { keywords: ["tamil literature category", "all tamil books"], answer: "Our Tamil Literature collection includes: 'Tamil Mozhi Amudam' (₹199), 'Uyir Ezhuthukal' (₹189), and 'Vetri Vazhi' (₹179)." },
+    { keywords: ["author name", "who wrote", "book author", "nithiyasree"], answer: "All 12 books are written by author Nithiyasree P, a B.E. Computer Science & Engineering student at National Engineering College." },
+    { keywords: ["engineering book under 300", "cheap tech book"], answer: "'Fundamentals of Programming' costs ₹299, fitting under your ₹300 budget." },
+
+    // --- CATEGORY 2: PURCHASING, ORDERS & PAYMENTS ---
+    { keywords: ["payment methods", "how to pay", "accepted payments"], answer: "We accept Cash on Delivery (COD), Google Pay, PhonePe, UPI (Paytm/BHIM), Debit/Credit Cards, and Net Banking." },
+    { keywords: ["cash on delivery", "cod available", "pay cash"], answer: "Yes, Cash on Delivery (COD) is supported for book purchases across all supported delivery locations." },
+    { keywords: ["how to order", "place order", "checkout process"], answer: "Add your desired books to Cart -> Click 'Proceed to Order' -> Fill in Full Name, Email, City, Address -> Select Payment Method -> Confirm Payment." },
+    { keywords: ["track order", "order status", "where is my order"], answer: "Navigate to the 'Track' tab in the top navigation bar and enter your Order ID (e.g., AWS-KECFVYUA) or registered email address." },
+    { keywords: ["return book", "refund process", "how to return"], answer: "Go to your Cart page, scroll down to 'Return a Book', select the ordered item, and click 'Return'. Refund of the purchase price will be initiated." },
+    { keywords: ["refund time", "days for refund", "money back"], answer: "Refunds are processed within 3 to 5 business days back to your original payment method." },
+
+    // --- CATEGORY 3: ONLINE RENTALS & TIMER ACCESS ---
+    { keywords: ["how rental works", "online reading", "digital rental"], answer: "The rental feature allows digital reading with timed access. Once rented, your countdown timer starts when you open the online reader." },
+    { keywords: ["rental account requirement", "premium plan needed"], answer: "Yes, renting books online requires an active Premium Account subscription." },
+    { keywords: ["premium plan price", "monthly fee"], answer: "A Premium Account costs ₹199/month and unlocks online book rentals and reader timer access." },
+    { keywords: ["rental durations", "how long rent"], answer: "Rentals are available for 1 Hour, 1 Day, and 3 Days." },
+    { keywords: ["when timer starts", "countdown start"], answer: "The countdown timer begins the moment you open the book viewer modal in the Rent tab." },
+
+    // --- CATEGORY 4: TOKENS, CREDITS & FREE BOOK REWARDS ---
+    { keywords: ["how to earn tokens", "token calculation"], answer: "You earn 1 Token for every ₹100 spent on book orders." },
+    { keywords: ["redeem tokens free book", "get free book"], answer: "Go to the 'Tokens' tab, check your balance, and click 'Redeem' next to any eligible book." },
+    { keywords: ["tokens required free book", "how many tokens"], answer: "Books require 50 Tokens (e.g. Fundamentals of Programming, Focus & Flourish), 75 Tokens (e.g. Uyir Ezhuthukal, Data Structures Simplified), or 100 Tokens (e.g. Vetri Vazhi) to redeem for free." },
+
+    // --- CATEGORY 5: SEARCH, BROWSING & GENERAL STORE INQUIRIES ---
+    { keywords: ["site author", "who built site", "nithiyasree p"], answer: "Ancient Wisdom Store was created and authored by Nithiyasree P, a B.E. Computer Science & Engineering student at National Engineering College (Roll No: 25104016)." },
+    { keywords: ["contact info", "email author", "phone number"], answer: "You can reach Nithiyasree P via Email at 25104016@nec.edu.in or by Phone at +91 98765 43210." },
+    { keywords: ["normal vs premium", "account plans"], answer: "Normal Plan is free (buy books, wishlist, earn tokens). Premium Plan (₹199/mo) unlocks online digital book rentals and timed reader access." }
+  ];
+
+  // =========================================================================
+  // 2. CHATBOT UI WINDOW CONTROLLERS
+  // =========================================================================
+  function toggleAwsChat() {
+    const win = document.getElementById('aws-chat-window');
+    win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
+  }
+
+  function handleAwsKeyPress(e) {
+    if (e.key === 'Enter') sendAwsMessage();
+  }
+
+  // =========================================================================
+  // 3. DYNAMIC KEYWORD MATCHING & INTENT SCORING ENGINE
+  // =========================================================================
+  function queryAncientWisdomAI(userPrompt) {
+    if (!userPrompt || userPrompt.trim() === "") {
+      return "Please ask a question about books, prices, rentals, tokens, or store details!";
+    }
+
+    const cleanPrompt = userPrompt.toLowerCase().replace(/[^\w\s]/gi, '');
+    const promptWords = cleanPrompt.split(/\s+/);
+
+    let bestMatch = null;
+    let maxScore = 0;
+
+    ANCIENT_WISDOM_QA_DATASET.forEach(item => {
+      let score = 0;
+
+      item.keywords.forEach(kw => {
+        if (cleanPrompt.includes(kw.toLowerCase())) {
+          score += 5; // Phrase match
+        }
+        
+        const kwWords = kw.toLowerCase().split(/\s+/);
+        kwWords.forEach(kwWord => {
+          promptWords.forEach(pWord => {
+            if (pWord === kwWord && pWord.length > 2) {
+              score += 2; // Word match
+            }
+          });
+        });
+      });
+
+      if (score > maxScore) {
+        maxScore = score;
+        bestMatch = item;
+      }
+    });
+
+    if (maxScore > 2 && bestMatch) {
+      return bestMatch.answer;
+    }
+
+    return "Welcome to <strong>Ancient Wisdom Store</strong> by Nithiyasree P! I can answer questions about our 12 books, prices, online rentals (₹18-₹35/hr), ₹199/mo Premium Plan, earning tokens (₹100 = 1 token), payment options (COD/UPI/Cards), or order tracking. How can I help you today?";
+  }
+
+  // =========================================================================
+  // 4. MESSAGE DISPLAY HANDLER
+  // =========================================================================
+  function sendAwsMessage() {
+    const input = document.getElementById('aws-chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const body = document.getElementById('aws-chat-body');
+
+    // Display User Question
+    const userDiv = document.createElement('div');
+    userDiv.className = 'aws-msg aws-user-msg';
+    userDiv.textContent = text;
+    body.appendChild(userDiv);
+
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+
+    // Display Thinking Indicator
+    const botDiv = document.createElement('div');
+    botDiv.className = 'aws-msg aws-bot-msg';
+    botDiv.innerHTML = "<em>Thinking... ✨</em>";
+    body.appendChild(botDiv);
+    body.scrollTop = body.scrollHeight;
+
+    // Generate Dynamic Answer
+    setTimeout(() => {
+      botDiv.innerHTML = queryAncientWisdomAI(text);
+      body.scrollTop = body.scrollHeight;
+    }, 200);
+  }
+</script>
 </body>
 </html>
