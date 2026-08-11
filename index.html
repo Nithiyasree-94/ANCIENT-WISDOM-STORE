@@ -559,5 +559,201 @@
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="script.js"></script>
+  <!-- ========================================== -->
+<!-- ANCIENT WISDOM STORE - AI CHATBOT SYSTEM  -->
+<!-- ========================================== -->
+<div id="aws-chatbot-container">
+  <button id="aws-chat-toggle" onclick="toggleAwsChat()">💬 AI Assistant</button>
+  
+  <div id="aws-chat-window" style="display: none;">
+    <div id="aws-chat-header">
+      <div>
+        <strong>📖 Ancient Wisdom Bot</strong>
+        <div style="font-size: 10px; opacity: 0.8;">Powered by Store Knowledge Base</div>
+      </div>
+      <button onclick="toggleAwsChat()" style="background: none; border: none; color: white; cursor: pointer; font-size: 16px;">✕</button>
+    </div>
+    
+    <div id="aws-chat-body">
+      <div class="aws-msg aws-bot-msg">
+        Hello! 👋 Welcome to <strong>Ancient Wisdom Store</strong>. Ask me about available books, pricing, rentals, or token offers!
+      </div>
+    </div>
+    
+    <div id="aws-chat-footer">
+      <input type="text" id="aws-chat-input" placeholder="Ask about books, rentals, offers..." onkeypress="handleAwsKeyPress(event)">
+      <button onclick="sendAwsMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  #aws-chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  #aws-chat-toggle {
+    background: #8b4513;
+    color: #ffffff;
+    border: 2px solid #f0e6d2;
+    padding: 12px 22px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-size: 15px;
+    font-weight: bold;
+    transition: transform 0.2s;
+  }
+  #aws-chat-toggle:hover {
+    transform: scale(1.05);
+  }
+  #aws-chat-window {
+    width: 340px;
+    height: 440px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    border: 1px solid #d4c39c;
+  }
+  #aws-chat-header {
+    background: #8b4513;
+    color: #ffffff;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #aws-chat-body {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    background: #fdfbf7;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .aws-msg {
+    max-width: 82%;
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .aws-bot-msg {
+    background: #f0e6d2;
+    color: #2c1d11;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+  }
+  .aws-user-msg {
+    background: #8b4513;
+    color: #ffffff;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+  #aws-chat-footer {
+    display: flex;
+    border-top: 1px solid #e0e0e0;
+    padding: 10px;
+    background: #ffffff;
+  }
+  #aws-chat-input {
+    flex: 1;
+    border: 1px solid #cccccc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    outline: none;
+    font-size: 13px;
+  }
+  #aws-chat-footer button {
+    background: #8b4513;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    margin-left: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+</style>
+
+<script>
+  function toggleAwsChat() {
+    const win = document.getElementById('aws-chat-window');
+    win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
+  }
+
+  function handleAwsKeyPress(e) {
+    if (e.key === 'Enter') sendAwsMessage();
+  }
+
+  function sendAwsMessage() {
+    const input = document.getElementById('aws-chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const body = document.getElementById('aws-chat-body');
+    const userDiv = document.createElement('div');
+    userDiv.className = 'aws-msg aws-user-msg';
+    userDiv.textContent = text;
+    body.appendChild(userDiv);
+
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+
+    setTimeout(() => {
+      const reply = getStoreResponse(text.toLowerCase());
+      const botDiv = document.createElement('div');
+      botDiv.className = 'aws-msg aws-bot-msg';
+      botDiv.innerHTML = reply;
+      body.appendChild(botDiv);
+      body.scrollTop = body.scrollHeight;
+    }, 350);
+  }
+
+  function getStoreResponse(q) {
+    if (q.includes('book') || q.includes('available') || q.includes('collection') || q.includes('list')) {
+      return "📚 <strong>Available Books by Category:</strong><br><br>" +
+             "• <strong>Engineering:</strong> Fundamentals of Programming (₹299), Data Structures Simplified (₹349), Database Management Essentials (₹329)<br>" +
+             "• <strong>Self Improvement:</strong> Student's Power Guide (₹249), Focus & Flourish (₹229), Dream Plan Achieve (₹269)<br>" +
+             "• <strong>Moral & Ethics:</strong> Virtues of Life (₹219), The Right Path (₹239), Character Counts (₹209)<br>" +
+             "• <strong>Tamil Literature:</strong> Tamil Mozhi Amudam (₹199), Uyir Ezhuthukal (₹189), Vetri Vazhi (₹179)";
+    }
+    
+    if (q.includes('offer') || q.includes('discount') || q.includes('free') || q.includes('token') || q.includes('reward')) {
+      return "🎁 <strong>Offers & Token Rewards:</strong><br><br>" +
+             "1. <strong>Token System:</strong> ₹100 spent = 1 Token earned.<br>" +
+             "2. <strong>Free Books:</strong> Collect 50-100 tokens to redeem books for free!<br>" +
+             "3. <strong>Premium Membership:</strong> Get unlimited online reading for ₹199/month.";
+    }
+
+    if (q.includes('rent') || q.includes('online') || q.includes('hourly')) {
+      return "📖 <strong>Rental Option:</strong><br>Rent and read books online with timed access (starting from ₹18/hr or ₹36/day). Upgrade to a <strong>Premium Account (₹199/mo)</strong> to unlock rentals!";
+    }
+
+    if (q.includes('price') || q.includes('cost') || q.includes('rate')) {
+      return "💰 Books range between ₹179 and ₹349. Rentals start at ₹18/hr.";
+    }
+
+    if (q.includes('track') || q.includes('order') || q.includes('status')) {
+      return "🚚 You can track active orders using your <strong>Order ID or Email</strong> under the <em>Track Your Order</em> section.";
+    }
+
+    if (q.includes('author') || q.includes('creator') || q.includes('nithiyasree') || q.includes('contact')) {
+      return "✍ <strong>Author & Creator:</strong> Nithiyasree P (National Engineering College)<br>📧 Email: 25104016@nec.edu.in";
+    }
+
+    return "I am the Ancient Wisdom Store AI Assistant! Ask me about <strong>available books</strong>, <strong>rental options</strong>, <strong>token offers</strong>, or <strong>tracking your order</strong>.";
+  }
+    </script>
 </body>
 </html>
