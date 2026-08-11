@@ -686,7 +686,13 @@
   }
 </style>
 
-  <script>
+  <!-- ========================================== -->
+<!-- ANCIENT WISDOM STORE - GEMINI AI CHATBOT   -->
+<!-- ========================================== -->
+<script>
+  // Integrated Google Gemini API Key
+  const GEMINI_API_KEY = "AQ.Ab8RN6Jd2o5x10vwoXzQSsukAeOviRz4e9-gvMde8XO2vrCBog";
+
   function toggleAwsChat() {
     const win = document.getElementById('aws-chat-window');
     win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
@@ -696,11 +702,9 @@
     if (e.key === 'Enter') sendAwsMessage();
   }
 
-  // Extracts real-time store updates directly from the website layout
+  // Reads current page text dynamically so the AI knows all live books & offers
   function getLiveStoreContext() {
-    const textContext = document.body.innerText;
-    // Cleans up whitespace to optimize context size
-    return textContext.replace(/\s+/g, ' ').slice(0, 3000); 
+    return document.body.innerText.replace(/\s+/g, ' ').slice(0, 3000); 
   }
 
   async function sendAwsMessage() {
@@ -710,7 +714,7 @@
 
     const body = document.getElementById('aws-chat-body');
     
-    // Render User Message
+    // Display User Question
     const userDiv = document.createElement('div');
     userDiv.className = 'aws-msg aws-user-msg';
     userDiv.textContent = text;
@@ -719,54 +723,62 @@
     input.value = '';
     body.scrollTop = body.scrollHeight;
 
-    // Render Typing Indicator
+    // Display Thinking Indicator
     const botDiv = document.createElement('div');
     botDiv.className = 'aws-msg aws-bot-msg';
-    botDiv.innerHTML = "<em>Thinking...</em>";
+    botDiv.innerHTML = "<em>Gemini is thinking... ✨</em>";
     body.appendChild(botDiv);
     body.scrollTop = body.scrollHeight;
 
     try {
-      // Gather live updates from page DOM
-      const pageInfo = getLiveStoreContext();
+      const storeData = getLiveStoreContext();
 
-      const prompt = `You are the official AI Assistant for "Ancient Wisdom Store", created by Nithiyasree P. 
-      Respond conversationally, warmly, and intelligently like Gemini/ChatGPT.
-      Answer the user's query based strictly on the live store details provided below.
+      const promptText = `You are the official AI Assistant for "Ancient Wisdom Store", created by Nithiyasree P.
+      Respond conversationally, helpfully, and dynamically like Google Gemini.
+      Answer the user's question accurately using the following live website data (books, prices, rentals, tokens, and offers):
       
-      [LIVE WEBSITE STORE DETAILS & UPDATES]:
-      ${pageInfo}
+      --- LIVE STORE DATA ---
+      ${storeData}
+      ----------------------
+      
+      User Question: ${text}`;
 
-      [USER QUERY]:
-      ${text}`;
+      // Gemini 2.5 Flash Endpoint
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-      // Query AI model (Free zero-config integration via Puter.js / Gemini engine)
-      if (typeof puter !== 'undefined') {
-        const response = await puter.ai.chat(prompt, { model: 'gemini-2.5-flash' });
-        botDiv.innerHTML = response.toString().replace(/\n/g, '<br>');
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: promptText }] }]
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.candidates && data.candidates[0].content.parts[0].text) {
+        let replyText = data.candidates[0].content.parts[0].text;
+        
+        // Format response markdown into HTML
+        let formattedReply = replyText
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>');
+
+        botDiv.innerHTML = formattedReply;
+      } else if (data.error) {
+        botDiv.innerHTML = "API Error: " + data.error.message;
       } else {
-        // Direct REST API Fallback
-        const res = await fetch("https://api.puter.com/v2/ai/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: [{ role: "user", content: prompt }]
-          })
-        });
-        const data = await res.json();
-        const reply = data.message || data.text || "I'm having trouble fetching live updates right now.";
-        botDiv.innerHTML = reply.replace(/\n/g, '<br>');
+        botDiv.innerHTML = "I couldn't process that right now. Please try asking again!";
       }
+
     } catch (err) {
-      console.error(err);
-      botDiv.innerHTML = "I am ready to help! Please ask about available books, pricing, rentals, or token offers.";
+      console.error("Gemini Error:", err);
+      botDiv.innerHTML = "Error connecting to Gemini API. Please check your internet connection.";
     }
 
     body.scrollTop = body.scrollHeight;
   }
 </script>
-<!-- Include Free AI Engine Script -->
-<script src="https://js.puter.com/v2/"></script>
   
 </body>
 </html>
