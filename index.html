@@ -840,37 +840,196 @@
   }
   #aws-chat-footer button:disabled { opacity: .6; cursor: not-allowed; }
 </style>
- 
-<!-- ANCIENT WISDOM STORE - DYNAMIC AI CHATBOT SYSTEM (backend-powered, with local fallback) -->
+  <!-- ========================================== -->
+<!-- ANCIENT WISDOM STORE - AI CHATBOT UI      -->
+<!-- Calls a real AI backend (dynamic,         -->
+<!-- ChatGPT/Gemini-style) grounded in the     -->
+<!-- store's full 115-entry knowledge base.    -->
+<!-- If the backend is unreachable, falls back -->
+<!-- to a full local matcher (catalog + FAQ +  -->
+<!-- policies) that can answer everything      -->
+<!-- offline too — not just 10 sample Q&As.    -->
+<!-- ========================================== -->
+<div id="aws-chatbot-container">
+  <button id="aws-chat-toggle" onclick="toggleAwsChat()">💬 AI Assistant</button>
+
+  <div id="aws-chat-window" style="display: none;">
+    <div id="aws-chat-header">
+      <div>
+        <strong>📖 Ancient Wisdom Bot</strong>
+        <div style="font-size: 10px; opacity: 0.8;" id="aws-bot-status">Powered by AI &bull; Store Knowledge Base</div>
+      </div>
+      <button onclick="toggleAwsChat()" style="background: none; border: none; color: white; cursor: pointer; font-size: 16px;">✕</button>
+    </div>
+
+    <div id="aws-chat-body">
+      <div class="aws-msg aws-bot-msg">
+        Hello! 👋 Welcome to <strong>Ancient Wisdom Store</strong>. Ask me about available books, pricing, rentals, or token offers!
+      </div>
+    </div>
+
+    <div id="aws-chat-footer">
+      <input type="text" id="aws-chat-input" placeholder="Ask about books, rentals, offers..." onkeypress="handleAwsKeyPress(event)">
+      <button id="aws-chat-send-btn" onclick="sendAwsMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  #aws-chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  #aws-chat-toggle {
+    background: #8b4513;
+    color: #ffffff;
+    border: 2px solid #f0e6d2;
+    padding: 12px 22px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-size: 15px;
+    font-weight: bold;
+    transition: transform 0.2s;
+  }
+  #aws-chat-toggle:hover {
+    transform: scale(1.05);
+  }
+  #aws-chat-window {
+    width: 340px;
+    height: 440px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    border: 1px solid #d4c39c;
+  }
+  #aws-chat-header {
+    background: #8b4513;
+    color: #ffffff;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #aws-chat-body {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    background: #fdfbf7;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .aws-msg {
+    max-width: 86%;
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .aws-bot-msg {
+    background: #f0e6d2;
+    color: #2c1d11;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+  }
+  .aws-user-msg {
+    background: #8b4513;
+    color: #ffffff;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+  .aws-typing-msg {
+    background: #f0e6d2;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 11px 14px;
+  }
+  .aws-typing-msg span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #8b4513; display: inline-block;
+    animation: aws-bounce 1.2s infinite ease-in-out;
+  }
+  .aws-typing-msg span:nth-child(2) { animation-delay: .15s; }
+  .aws-typing-msg span:nth-child(3) { animation-delay: .3s; }
+  @keyframes aws-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: .5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+  #aws-chat-footer {
+    display: flex;
+    border-top: 1px solid #e0e0e0;
+    padding: 10px;
+    background: #ffffff;
+  }
+  #aws-chat-input {
+    flex: 1;
+    border: 1px solid #cccccc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    outline: none;
+    font-size: 13px;
+  }
+  #aws-chat-input:disabled { background: #f2f2f2; }
+  #aws-chat-footer button {
+    background: #8b4513;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    margin-left: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  #aws-chat-footer button:disabled { opacity: .6; cursor: not-allowed; }
+</style>
+
+<!-- ANCIENT WISDOM STORE - DYNAMIC AI CHATBOT SYSTEM (backend-powered, with full local fallback) -->
 <script>
 // =========================================================================
 // ANCIENT WISDOM STORE - DYNAMIC AI CHATBOT
 // Created by: Nithiyasree P (Roll No: 25104016, National Engineering College)
 //
-// This talks to a real AI backend (see the /chatbot/server project) which
-// calls OpenAI / Gemini / Claude with the store's live knowledge base as
-// context, and streams the answer back token-by-token like ChatGPT/Gemini.
-// If the backend can't be reached, it automatically falls back to the
-// original local keyword-matching Q&A dataset below, so the widget never
-// goes fully silent.
+// Primary path: sends the conversation to your AI backend (OpenAI / Gemini /
+// Claude), grounded in the store's knowledge base, and streams the reply
+// back token-by-token like ChatGPT/Gemini.
+//
+// Fallback path (used automatically if the backend can't be reached): a
+// full local engine covering the entire catalog, all 115 FAQ entries, and
+// store policies — so the bot can still answer nearly everything even
+// before you deploy the backend, or if it's briefly down.
 // =========================================================================
- 
+
 // >>> SET THIS to your deployed backend's /api/chat URL before going live <<<
 const AWS_CHAT_API_URL = "https://YOUR-BACKEND-DOMAIN.example.com/api/chat";
- 
+
 const AWS_SESSION_ID = "aws_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
 let awsConversation = []; // {role:'user'|'assistant', content:'...'}
- 
+
 function toggleAwsChat() {
   const win = document.getElementById('aws-chat-window');
   win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
   if (win.style.display === 'flex') document.getElementById('aws-chat-input').focus();
 }
- 
+
 function handleAwsKeyPress(e) {
   if (e.key === 'Enter') sendAwsMessage();
 }
- 
+
 function awsAppendMessage(role, text) {
   const body = document.getElementById('aws-chat-body');
   const div = document.createElement('div');
@@ -880,7 +1039,7 @@ function awsAppendMessage(role, text) {
   body.scrollTop = body.scrollHeight;
   return div;
 }
- 
+
 function awsShowTyping() {
   const body = document.getElementById('aws-chat-body');
   const div = document.createElement('div');
@@ -894,23 +1053,23 @@ function awsRemoveTyping() {
   const el = document.getElementById('aws-typing-indicator');
   if (el) el.remove();
 }
- 
+
 function awsSetInputEnabled(enabled) {
   document.getElementById('aws-chat-input').disabled = !enabled;
   document.getElementById('aws-chat-send-btn').disabled = !enabled;
 }
- 
+
 async function sendAwsMessage() {
   const input = document.getElementById('aws-chat-input');
   const text = input.value.trim();
   if (!text) return;
   input.value = '';
- 
+
   awsAppendMessage('user', text);
   awsConversation.push({ role: 'user', content: text });
   awsShowTyping();
   awsSetInputEnabled(false);
- 
+
   try {
     const replyText = await awsCallBackend(awsConversation);
     awsConversation.push({ role: 'assistant', content: replyText });
@@ -926,7 +1085,7 @@ async function sendAwsMessage() {
     input.focus();
   }
 }
- 
+
 // Calls the real AI backend and streams the response into the chat bubble,
 // the same way ChatGPT/Gemini render answers as they're generated.
 async function awsCallBackend(messages) {
@@ -935,18 +1094,18 @@ async function awsCallBackend(messages) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages: messages, sessionId: AWS_SESSION_ID })
   });
- 
+
   if (!res.ok) throw new Error('Server responded with ' + res.status);
- 
+
   const contentType = res.headers.get('content-type') || '';
- 
+
   // Streaming (Server-Sent Events) response — token-by-token like ChatGPT.
   if (contentType.indexOf('text/event-stream') !== -1 && res.body) {
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let full = '';
     let bubble = null;
- 
+
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -975,7 +1134,7 @@ async function awsCallBackend(messages) {
     if (!full) throw new Error('Empty response from AI backend');
     return full;
   }
- 
+
   // Plain JSON fallback response shape: { reply: "..." }
   const data = await res.json();
   awsRemoveTyping();
@@ -984,100 +1143,272 @@ async function awsCallBackend(messages) {
   awsAppendMessage('bot', replyText);
   return replyText;
 }
- 
+
 // =========================================================================
-// LOCAL OFFLINE FALLBACK — your original 100+ Q&A keyword matcher.
-// Only used automatically if the AI backend above can't be reached.
+// LOCAL OFFLINE ENGINE — full catalog + all 115 FAQs + store policies.
+// Used automatically only if the AI backend above can't be reached.
 // =========================================================================
-const ANCIENT_WISDOM_QA_DATASET = [
-  {
-    category: "Book Recommendations & Suggestions",
-    keywords: ["beginner", "start coding", "c programming", "c++", "programming book", "learn code"],
-    question: "I'm a complete beginner in coding. Which book should I start with?",
-    answer: "We recommend 'Fundamentals of Programming' by Nithiyasree P (₹299). It is a beginner-friendly guide covering core concepts of C and C++ with step-by-step examples."
-  },
-  {
-    category: "Book Recommendations & Suggestions",
-    keywords: ["data structures", "interview", "arrays", "trees", "graphs", "algorithm"],
-    question: "I want to learn Data Structures for coding interviews. What do you recommend?",
-    answer: "'Data Structures Simplified' (₹349) by Nithiyasree P is designed for interview prep, covering Arrays, Trees, and Graphs in simple, accessible terms."
-  },
-  {
-    category: "Book Recommendations & Suggestions",
-    keywords: ["sql", "database", "er diagrams", "dbms"],
-    question: "Which book covers SQL and database design?",
-    answer: "'Database Management Essentials' (₹329) covers SQL queries, database fundamentals, and ER diagrams."
-  },
-  {
-    category: "Online Rentals & Timer Access",
-    keywords: ["rent", "rental", "timer", "read online", "premium plan"],
-    question: "How does book rental work?",
-    answer: "Renting requires a Premium Account (₹199/month). Choose 1 Hour, 1 Day, or 3 Days access — your timer starts the moment you open the book in the reader."
-  },
-  {
-    category: "Tokens, Credits & Free Book Rewards",
-    keywords: ["token", "tokens", "free book", "redeem", "reward"],
-    question: "How do tokens and free book redemption work?",
-    answer: "You earn 1 Token for every ₹100 spent. Redeem 50 tokens for Fundamentals of Programming, Focus & Flourish, or Virtues of Life; 75 for Uyir Ezhuthukal or Data Structures Simplified; 100 for Vetri Vazhi. Tokens never expire."
-  },
-  {
-    category: "Purchasing, Orders & Payments",
-    keywords: ["payment", "pay", "cod", "upi", "card", "netbanking"],
-    question: "What payment methods are accepted?",
-    answer: "We accept Cash on Delivery (COD), Google Pay, PhonePe, UPI (Paytm/BHIM), Debit/Credit Cards, and Net Banking."
-  },
-  {
-    category: "Purchasing, Orders & Payments",
-    keywords: ["track", "order status", "where is my order"],
-    question: "How do I track my order?",
-    answer: "Go to the 'Track' tab and enter your Order ID (format AWS-XXXXXXXX) or the email you used at checkout. Orders move through Ordered → Packed → Shipped → Delivered."
-  },
-  {
-    category: "Purchasing, Orders & Payments",
-    keywords: ["return", "refund"],
-    question: "How do I return a book and get a refund?",
-    answer: "On the Cart page, scroll to 'Return a Book', select the item, and click Return. Refunds go back to your original payment method within 3–5 business days."
-  },
-  {
-    category: "Search, Browsing & General Store Inquiries",
-    keywords: ["author", "nithiyasree", "who wrote", "contact", "email", "phone"],
-    question: "Who is the author, and how do I contact the store?",
-    answer: "All books are by Nithiyasree P (B.E. CSE, National Engineering College, Roll No. 25104016). Contact: 25104016@nec.edu.in or +91 98765 43210."
-  },
-  {
-    category: "Search, Browsing & General Store Inquiries",
-    keywords: ["normal account", "premium account", "plan difference"],
-    question: "What's the difference between Normal and Premium accounts?",
-    answer: "Normal is free — buy books, wishlist, and earn tokens. Premium (₹199/month) adds online book rentals with timed reading access."
-  }
+// Auto-generated from knowledge_base.json — Ancient Wisdom Store
+
+const AWS_CATALOG = [
+  { title: "Fundamentals of Programming", category: "Engineering", price: 299, rentHour: 30, rentDay: 60, description: "Beginner's guide to C & C++", redeemTokens: 50 },
+  { title: "Data Structures Simplified", category: "Engineering", price: 349, rentHour: 35, rentDay: 70, description: "Arrays, Trees & Graphs", redeemTokens: 75 },
+  { title: "Database Management Essentials", category: "Engineering", price: 329, rentHour: 33, rentDay: 66, description: "SQL & ER diagrams", redeemTokens: null },
+  { title: "The Student's Power Guide", category: "Self Improvement", price: 249, rentHour: 25, rentDay: 50, description: "Habits & mindset for college success", redeemTokens: null },
+  { title: "Focus & Flourish", category: "Self Improvement", price: 229, rentHour: 23, rentDay: 46, description: "Overcoming distractions & building discipline", redeemTokens: 50 },
+  { title: "Dream, Plan, Achieve", category: "Self Improvement", price: 269, rentHour: 27, rentDay: 54, description: "Goal setting for young minds", redeemTokens: null },
+  { title: "Virtues of Life", category: "Moral & Ethics", price: 219, rentHour: 22, rentDay: 44, description: "Stories on honesty, kindness & courage", redeemTokens: 50 },
+  { title: "The Right Path", category: "Moral & Ethics", price: 239, rentHour: 24, rentDay: 48, description: "Ethical decision making", redeemTokens: null },
+  { title: "Character Counts", category: "Moral & Ethics", price: 209, rentHour: 21, rentDay: 42, description: "Building strong values & integrity", redeemTokens: null },
+  { title: "Tamil Mozhi Amudam", category: "Tamil Literature", price: 199, rentHour: 20, rentDay: 40, description: "Beauty & wisdom of Tamil language", redeemTokens: null },
+  { title: "Uyir Ezhuthukal", category: "Tamil Literature", price: 189, rentHour: 19, rentDay: 38, description: "Short moral stories in Tamil tradition", redeemTokens: 75 },
+  { title: "Vetri Vazhi", category: "Tamil Literature", price: 179, rentHour: 18, rentDay: 36, description: "Inspirational verses for student life", redeemTokens: 100 }
 ];
- 
+
+const ANCIENT_WISDOM_QA_DATASET = [
+  { category: "Book Recommendations & Suggestions", keywords: ["i'm", "complete", "beginner", "programming", "book", "start"], question: "I'm a complete beginner to programming. Which book should I start with?", answer: "Start with \"Fundamentals of Programming\" (₹299) by Nithiyasree P. It's designed as a beginner's guide covering both C & C++ from the ground up, so it's the perfect first step before moving on to advanced topics." },
+  { category: "Book Recommendations & Suggestions", keywords: ["already", "know", "basics", "read", "next", "you're"], question: "I already know the basics of C. What should I read next?", answer: "Once you're comfortable with C basics, move on to \"Data Structures Simplified\" (₹349), which covers Arrays, Trees & Graphs in an easy-to-understand way — a natural next step after \"Fundamentals of Programming.\"" },
+  { category: "Book Recommendations & Suggestions", keywords: ["book", "best", "learning", "sql", "database", "concepts"], question: "Which book is best for learning SQL and database concepts?", answer: "\"Database Management Essentials\" (₹329) is exactly what you need. It covers SQL and ER diagrams, making it ideal for students who want to understand how databases are designed and queried." },
+  { category: "Book Recommendations & Suggestions", keywords: ["coding", "exam", "next", "week", "rent", "book"], question: "I have a coding exam next week. Can I rent a book instead of buying it?", answer: "Yes! You can rent \"Fundamentals of Programming\" for ₹30/hr or ₹60/day, or \"Data Structures Simplified\" for ₹35/hr or ₹70/day. Renting is a great low-cost option for quick, focused exam revision. Just remember rentals require our Premium Plan (₹199/month)." },
+  { category: "Book Recommendations & Suggestions", keywords: ["what's", "difference", "fundamentals", "programming", "data", "structures"], question: "What's the difference between \"Fundamentals of Programming\" and \"Data Structures Simplified\"?", answer: "\"Fundamentals of Programming\" (₹299) is a beginner's guide to C & C++ syntax and logic-building, while \"Data Structures Simplified\" (₹349) builds on that foundation to teach Arrays, Trees & Graphs. We recommend reading them in that order." },
+  { category: "Book Recommendations & Suggestions", keywords: ["want", "build", "better", "study", "habits", "any"], question: "I want to build better study habits. Any book recommendations?", answer: "\"The Student's Power Guide\" (₹249) is perfect for you — it focuses on habits and mindset specifically for college success." },
+  { category: "Book Recommendations & Suggestions", keywords: ["get", "distracted", "very", "easily", "while", "studying"], question: "I get distracted very easily while studying. What can help?", answer: "\"Focus & Flourish\" (₹229) is written exactly for this — it deals with overcoming distractions and building discipline, both essential skills for consistent study sessions." },
+  { category: "Book Recommendations & Suggestions", keywords: ["set", "actually", "achieve", "goals", "student", "dream"], question: "How do I set and actually achieve my goals as a student?", answer: "\"Dream, Plan, Achieve\" (₹269) walks you through practical goal-setting techniques designed specifically for young minds." },
+  { category: "Book Recommendations & Suggestions", keywords: ["self", "improvement", "book", "read", "first", "want"], question: "Which self-improvement book should I read first if I want all three benefits — habits, focus, and goals?", answer: "Great question! We suggest starting with \"The Student's Power Guide\" (₹249) for foundational habits, then \"Focus & Flourish\" (₹229) to sharpen discipline, and finishing with \"Dream, Plan, Achieve\" (₹269) to turn that discipline into concrete goals." },
+  { category: "Book Recommendations & Suggestions", keywords: ["want", "teach", "child", "good", "values", "suggest"], question: "I want to teach my child good values. What do you suggest?", answer: "\"Virtues of Life\" (₹219) is a wonderful choice — it shares stories on honesty, kindness & courage in an engaging, easy-to-relate format for young readers." },
+  { category: "Book Recommendations & Suggestions", keywords: ["there", "book", "helps", "making", "ethical", "decisions"], question: "Is there a book that helps with making ethical decisions?", answer: "Yes, \"The Right Path\" (₹239) focuses specifically on ethical decision-making, helping readers navigate real-life moral dilemmas thoughtfully." },
+  { category: "Book Recommendations & Suggestions", keywords: ["teenager", "needs", "guidance", "building", "strong", "values"], question: "My teenager needs guidance on building strong values. Any recommendation?", answer: "\"Character Counts\" (₹209) is ideal — it's centered on building strong values & integrity, perfect for teenagers shaping their sense of self." },
+  { category: "Book Recommendations & Suggestions", keywords: ["cheapest", "book", "moral", "ethics", "category", "character"], question: "Which is the cheapest book in the Moral & Ethics category?", answer: "\"Character Counts\" (₹209) is the most affordable in that category, followed by \"Virtues of Life\" (₹219) and \"The Right Path\" (₹239)." },
+  { category: "Book Recommendations & Suggestions", keywords: ["want", "explore", "beauty", "tamil", "language", "read"], question: "I want to explore the beauty of the Tamil language. What should I read?", answer: "\"Tamil Mozhi Amudam\" (₹199) is a lovely pick — it explores the beauty & wisdom of the Tamil language in an accessible way." },
+  { category: "Book Recommendations & Suggestions", keywords: ["there", "short", "moral", "stories", "written", "tamil"], question: "Are there short moral stories written in Tamil?", answer: "Yes! \"Uyir Ezhuthukal\" (₹189) offers short moral stories rooted in Tamil tradition — a great read for both language lovers and value-building." },
+  { category: "Book Recommendations & Suggestions", keywords: ["need", "something", "inspirational", "student", "going", "through"], question: "I need something inspirational for a student going through a tough academic phase.", answer: "\"Vetri Vazhi\" (₹179) is a collection of inspirational verses for student life, and at ₹179 it's also our most affordable title overall." },
+  { category: "Book Recommendations & Suggestions", keywords: ["most", "affordable", "book", "entire", "store", "vetri"], question: "Which is the most affordable book in your entire store?", answer: "\"Vetri Vazhi\" (₹179) from our Tamil Literature category is currently the most budget-friendly book we offer." },
+  { category: "Book Recommendations & Suggestions", keywords: ["suggest", "complete", "set", "books", "someone", "starting"], question: "Can you suggest a complete set of books for someone starting a Computer Science degree?", answer: "Absolutely — we'd recommend \"Fundamentals of Programming\" (₹299), \"Data Structures Simplified\" (₹349), and \"Database Management Essentials\" (₹329) as a solid Engineering foundation trio." },
+  { category: "Book Recommendations & Suggestions", keywords: ["want", "gift", "book", "school", "student", "suggest"], question: "I want to gift a book to a school student. What would you suggest?", answer: "For school-age readers, \"Virtues of Life\" (₹219) or \"Vetri Vazhi\" (₹179) make thoughtful, values-driven gifts that are easy to relate to." },
+  { category: "Book Recommendations & Suggestions", keywords: ["books", "recommend", "someone", "preparing", "engineering", "entrance"], question: "What books would you recommend for someone preparing for engineering entrance or semester exams?", answer: "For core CS fundamentals, go with \"Fundamentals of Programming\" (₹299) and \"Data Structures Simplified\" (₹349). If your syllabus includes databases, add \"Database Management Essentials\" (₹329) as well." },
+  { category: "Book Recommendations & Suggestions", keywords: ["want", "read", "something", "tamil", "also", "moral"], question: "I want to read something in Tamil but also want moral lessons. Which single book covers both?", answer: "\"Uyir Ezhuthukal\" (₹189) is your best fit — it blends Tamil storytelling tradition with short moral lessons in one book." },
+  { category: "Book Recommendations & Suggestions", keywords: ["author", "all", "books", "ancient", "wisdom", "store"], question: "Who is the author of all these books?", answer: "All books on Ancient Wisdom Store are written by Nithiyasree P, a B.E. Computer Science & Engineering graduate from National Engineering College." },
+  { category: "Book Recommendations & Suggestions", keywords: ["author", "background", "makes", "qualified", "write", "engineering"], question: "Does the author have a background that makes her qualified to write the Engineering books?", answer: "Yes — Nithiyasree P holds a B.E. in Computer Science & Engineering from National Engineering College, which is reflected in the practical, student-friendly approach of our Engineering titles." },
+  { category: "Book Recommendations & Suggestions", keywords: ["want", "improve", "discipline", "i'm", "also", "interested"], question: "I want to improve my discipline but I'm also interested in ethics. Which one should I pick first?", answer: "It depends on your immediate goal: choose \"Focus & Flourish\" (₹229) if discipline and distraction-control are your priority right now, or \"The Right Path\" (₹239) if you want to strengthen ethical decision-making first. Both are excellent standalone reads." },
+  { category: "Book Recommendations & Suggestions", keywords: ["any", "fiction", "novels", "catalog", "currently", "ancient"], question: "Do you have any fiction or novels in your catalog?", answer: "Currently, Ancient Wisdom Store focuses on Engineering, Self Improvement, Moral & Ethics, and Tamil Literature titles rather than fiction or novels. All our books are non-fiction, skill- or value-building reads by Nithiyasree P." },
+  { category: "Book Recommendations & Suggestions", keywords: ["book", "highest", "price", "worth", "data", "structures"], question: "Which book has the highest price, and is it worth it?", answer: "\"Data Structures Simplified\" (₹349) is our highest-priced title. It's worth it for CS/engineering students since it covers a core, exam-critical topic — Arrays, Trees & Graphs — in a simplified format." },
+  { category: "Book Recommendations & Suggestions", keywords: ["i'm", "student", "anymore", "still", "want", "build"], question: "I'm not a student anymore but I still want to build better habits and values. Any book for adults?", answer: "Definitely — \"The Student's Power Guide\" (₹249), \"Focus & Flourish\" (₹229), and \"The Right Path\" (₹239) all offer principles on habits, discipline, and ethics that apply well beyond student life." },
+  { category: "Book Recommendations & Suggestions", keywords: ["compare", "renting", "buying", "database", "management", "essentials"], question: "Can you compare renting vs buying for \"Database Management Essentials\"?", answer: "Buying \"Database Management Essentials\" costs ₹329 with lifetime access. Renting costs ₹33/hr or ₹66/day (Premium Plan required). If you need it for a single exam or quick reference, renting is more economical; if you'll revisit it often, buying is better value." },
+  { category: "Book Recommendations & Suggestions", keywords: ["i'm", "new", "here", "what's", "most", "popular"], question: "I'm new here — what's the most popular or recommended starting book?", answer: "For most new readers, we recommend starting with either \"Fundamentals of Programming\" (₹299) if you're technical, or \"The Student's Power Guide\" (₹249) if you're looking for personal growth — both are great entry points into our catalog." },
+  { category: "Book Recommendations & Suggestions", keywords: ["there", "any", "upcoming", "books", "planned", "nithiyasree"], question: "Are there any upcoming books planned by Nithiyasree P?", answer: "We don't have specific upcoming release details to share right now, but we recommend checking the \"Books\" section on our site periodically, as new titles by Nithiyasree P may be added over time." },
+  { category: "Purchasing, Orders & Payments", keywords: ["payment", "methods", "accept", "cash", "delivery", "cod"], question: "What payment methods do you accept?", answer: "We accept Cash on Delivery (COD), Google Pay, PhonePe, UPI (Paytm/BHIM), Debit/Credit Cards, and Net Banking — choose whichever is most convenient at checkout." },
+  { category: "Purchasing, Orders & Payments", keywords: ["pay", "cash", "book", "delivered", "delivery", "cod"], question: "Can I pay cash when my book is delivered?", answer: "Yes, Cash on Delivery (COD) is available as one of our payment options." },
+  { category: "Purchasing, Orders & Payments", keywords: ["there", "minimum", "order", "value", "place", "purchase"], question: "Is there a minimum order value to place a purchase?", answer: "No, there's no minimum order value — you can purchase even a single book, such as \"Vetri Vazhi\" at ₹179." },
+  { category: "Purchasing, Orders & Payments", keywords: ["check", "status", "order", "anytime", "using", "track"], question: "How do I check the status of my order?", answer: "You can check your order status anytime using the \"Track\" option in the main navigation menu of the website." },
+  { category: "Purchasing, Orders & Payments", keywords: ["cancel", "order", "placing", "cancellation", "depends", "far"], question: "Can I cancel my order after placing it?", answer: "Order cancellation depends on how far your order has progressed. Please use the \"Track\" section to check your order status, or contact our support team as soon as possible for cancellation requests." },
+  { category: "Purchasing, Orders & Payments", keywords: ["long", "delivery", "usually", "take", "timelines", "depend"], question: "How long does delivery usually take?", answer: "Delivery timelines depend on your location. Once your order is placed, you can monitor real-time progress using the \"Track\" feature on our site." },
+  { category: "Purchasing, Orders & Payments", keywords: ["charge", "extra", "delivery", "charges", "applicable", "shown"], question: "Do you charge extra for delivery?", answer: "Delivery charges, if applicable, are shown clearly at checkout before you confirm your payment, so you'll always know the final amount upfront." },
+  { category: "Purchasing, Orders & Payments", keywords: ["return", "refund", "policy", "purchased", "books", "receive"], question: "What is your return or refund policy for purchased books?", answer: "If you receive a damaged or incorrect item, please contact our support team with your order details, and we'll help resolve it. We recommend reviewing the order confirmation carefully, as digital/rental access is generally non-refundable once accessed." },
+  { category: "Purchasing, Orders & Payments", keywords: ["get", "invoice", "receipt", "purchase", "order", "confirmation"], question: "Will I get an invoice or receipt for my purchase?", answer: "Yes, an order confirmation/invoice is generated for every purchase, which you can access through your account or order confirmation email." },
+  { category: "Purchasing, Orders & Payments", keywords: ["buy", "multiple", "books", "single", "order", "absolutely"], question: "Can I buy multiple books in a single order?", answer: "Absolutely — simply add each book you'd like to your cart using the \"+CART\" button, and check out all of them together in a single order." },
+  { category: "Purchasing, Orders & Payments", keywords: ["offer", "gift", "wrapping", "book", "purchases", "don't"], question: "Do you offer gift wrapping for book purchases?", answer: "We don't currently offer a dedicated gift-wrapping service, but each book makes a thoughtful gift on its own — you're welcome to add a personal note when placing your order if needed." },
+  { category: "Purchasing, Orders & Payments", keywords: ["change", "delivery", "address", "placing", "order", "please"], question: "How do I change my delivery address after placing an order?", answer: "Please contact our support team as soon as possible with your order number and updated address — changes are easiest before the order has been shipped." },
+  { category: "Purchasing, Orders & Payments", keywords: ["discount", "codes", "coupons", "any", "active", "promotions"], question: "Do you have discount codes or coupons?", answer: "Any active promotions or discount codes will be shown at checkout or announced on the site. Keep an eye on the \"Home\" and \"Books\" pages for current offers." },
+  { category: "Purchasing, Orders & Payments", keywords: ["split", "payment", "cash", "online", "currently", "each"], question: "Can I split my payment between cash and online payment?", answer: "Currently, each order is processed through a single payment method — either COD or one of our online options (Google Pay, PhonePe, UPI, Cards, Net Banking) — not a split combination." },
+  { category: "Purchasing, Orders & Payments", keywords: ["online", "payment", "failed", "money", "deducted", "don't"], question: "My online payment failed but money was deducted. What should I do?", answer: "Don't worry — failed transactions are usually auto-reversed by your bank within a few business days. If the amount isn't refunded, please contact our support team with your payment reference number." },
+  { category: "Purchasing, Orders & Payments", keywords: ["offer", "emi", "installment", "payment", "options", "depend"], question: "Do you offer EMI or installment payment options?", answer: "EMI options depend on your bank/card provider at checkout when paying by Debit/Credit Card. We don't offer a separate in-house installment plan at this time." },
+  { category: "Purchasing, Orders & Payments", keywords: ["need", "create", "account", "buy", "book", "recommend"], question: "Do I need to create an account to buy a book?", answer: "We recommend creating a free Normal account so you can track orders, use your wishlist, and start earning tokens on every purchase — it only takes a minute to sign up." },
+  { category: "Purchasing, Orders & Payments", keywords: ["get", "gst", "invoice", "order", "invoices", "provided"], question: "Will I get a GST invoice for my order?", answer: "Order invoices are provided for every purchase. For specific GST invoice requirements, please reach out to our support team with your order details." },
+  { category: "Purchasing, Orders & Payments", keywords: ["received", "wrong", "book", "we're", "sorry", "mix"], question: "I received the wrong book. What do I do?", answer: "We're sorry for the mix-up! Please contact our support team immediately with your order number and details of the item received, and we'll help sort it out quickly." },
+  { category: "Purchasing, Orders & Payments", keywords: ["order", "shows", "placed", "never", "received", "confirmation"], question: "My order shows as placed but I never received a confirmation. What now?", answer: "Please check the \"Track\" section under your account first. If there's still no update, reach out to our support team with your order details and we'll investigate right away." },
+  { category: "Online Rentals & Timer Access", keywords: ["book", "rental", "feature", "work", "rentals", "give"], question: "How does the book rental feature work?", answer: "Rentals give you timed online reading access to a book. Once you open a rented book, the timer starts counting down based on the rental duration you chose (per hour or per day)." },
+  { category: "Online Rentals & Timer Access", keywords: ["need", "special", "plan", "rent", "books", "book"], question: "Do I need a special plan to rent books?", answer: "Yes, book rentals require our Premium Plan, which costs ₹199/month. With Premium, you get timed online reading access to any book in our catalog." },
+  { category: "Online Rentals & Timer Access", keywords: ["what's", "difference", "hourly", "daily", "rental", "gives"], question: "What's the difference between hourly and daily rental?", answer: "Hourly rental gives you a short reading window (e.g., ₹30/hr for \"Fundamentals of Programming\") ideal for quick reference, while daily rental (e.g., ₹60/day for the same book) gives you a full 24-hour access window — better if you need to read in multiple sittings." },
+  { category: "Online Rentals & Timer Access", keywords: ["exactly", "rental", "timer", "start", "starts", "moment"], question: "When exactly does my rental timer start?", answer: "The timer starts the moment you open the book for reading online, not when you complete the payment — so you can choose to start reading whenever suits you best." },
+  { category: "Online Rentals & Timer Access", keywords: ["extend", "rental", "time", "haven't", "finished", "reading"], question: "Can I extend my rental time if I haven't finished reading?", answer: "If your timer runs out before you finish, you can simply rent the book again for another hour or day at the listed rental rate to continue reading." },
+  { category: "Online Rentals & Timer Access", keywords: ["rent", "more", "than", "one", "book", "same"], question: "Can I rent more than one book at the same time?", answer: "Yes, as a Premium member you can rent multiple books simultaneously, each with its own independent reading timer." },
+  { category: "Online Rentals & Timer Access", keywords: ["read", "rented", "books", "offline", "like", "downloading"], question: "Can I read rented books offline, like downloading a PDF?", answer: "No, rentals are for online, timed reading access only — books aren't available for offline download during a rental period." },
+  { category: "Online Rentals & Timer Access", keywords: ["happens", "rental", "timer", "expires", "while", "i'm"], question: "What happens if my rental timer expires while I'm in the middle of a chapter?", answer: "Once the timer ends, reading access closes automatically. You'll need to start a new rental (hourly or daily) to continue reading from where you left off." },
+  { category: "Online Rentals & Timer Access", keywords: ["cancel", "premium", "plan", "subscription", "manage", "account"], question: "How do I cancel my Premium Plan subscription?", answer: "You can manage or cancel your Premium subscription from your Account section. Once cancelled, you'll retain Normal account benefits (buying, wishlisting, and earning tokens) but lose rental access." },
+  { category: "Online Rentals & Timer Access", keywords: ["downgrade", "premium", "normal", "anytime", "switch", "back"], question: "Can I downgrade from Premium to Normal anytime?", answer: "Yes, you can switch back to a Normal (free) account at any time through your Account settings; you'll simply lose access to timed rentals until you upgrade again." },
+  { category: "Online Rentals & Timer Access", keywords: ["there", "limit", "many", "devices", "use", "rented"], question: "Is there a limit to how many devices I can use for rented books?", answer: "For the best experience and to protect timed access, we recommend reading your rental on one device at a time." },
+  { category: "Online Rentals & Timer Access", keywords: ["copy", "text", "take", "screenshots", "rented", "book"], question: "Can I copy text or take screenshots from a rented book?", answer: "Rented books are meant for personal reading during the timed access window; copying or redistributing content isn't permitted, in fairness to the author's work." },
+  { category: "Online Rentals & Timer Access", keywords: ["renting", "cheaper", "than", "buying", "only", "need"], question: "Is renting cheaper than buying if I only need a book for one day?", answer: "Yes — for example, \"The Student's Power Guide\" costs ₹249 to buy, but only ₹50/day to rent. If you only need it briefly, renting is significantly more economical." },
+  { category: "Online Rentals & Timer Access", keywords: ["get", "notified", "rental", "timer", "runs", "reading"], question: "Will I get notified before my rental timer runs out?", answer: "The reading interface shows your remaining rental time while you read, so you can keep track and finish up or extend before it expires." },
+  { category: "Online Rentals & Timer Access", keywords: ["access", "book", "right", "pay", "rental", "premium"], question: "How do I access a book right after I pay for a rental?", answer: "Once your Premium Plan is active and payment for the specific rental is confirmed, the book becomes available in your account — just open it to begin your timed reading session." },
+  { category: "Online Rentals & Timer Access", keywords: ["normal", "account", "holders", "rent", "books", "too"], question: "Can Normal account holders rent books too?", answer: "No, rentals require the Premium Plan (₹199/month). Normal account holders can still buy books, use the wishlist, and earn tokens, but rental/timed reading access is a Premium-only feature." },
+  { category: "Online Rentals & Timer Access", keywords: ["rent", "same", "book", "rental", "expires", "you're"], question: "Can I rent the same book again after my rental expires?", answer: "Yes, you're welcome to rent the same book again for another hourly or daily session anytime you need continued access." },
+  { category: "Online Rentals & Timer Access", keywords: ["get", "refund", "accidentally", "started", "rental", "timer"], question: "Can I get a refund if I accidentally started a rental timer and didn't read anything?", answer: "Since rental access is granted the moment the timer starts, rentals are generally non-refundable once activated. Please contact support if you experienced a technical issue." },
+  { category: "Online Rentals & Timer Access", keywords: ["face", "technical", "issue", "during", "rental", "like"], question: "What should I do if I face a technical issue during my rental, like the book not loading?", answer: "Please contact our support team right away with your account and rental details — if it was a technical fault on our end, we'll make it right." },
+  { category: "Online Rentals & Timer Access", keywords: ["pause", "rental", "timer", "resume", "later", "currently"], question: "Can I pause my rental timer and resume later?", answer: "Currently, once a rental timer starts, it runs continuously until it expires — there's no pause feature. Plan your reading session accordingly, or choose the daily rate for more flexibility." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["earn", "tokens", "ancient", "wisdom", "store", "automatically"], question: "How do I earn tokens on Ancient Wisdom Store?", answer: "You automatically earn 1 token for every ₹100 you spend on the store — tokens accumulate with every qualifying purchase." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["many", "tokens", "need", "get", "free", "book"], question: "How many tokens do I need to get a free book?", answer: "You can redeem a free book once you've collected between 50 to 100 tokens, depending on the book you choose." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["rentals", "also", "earn", "tokens", "only", "purchases"], question: "Do rentals also earn me tokens, or only purchases?", answer: "Tokens are earned based on the ₹100-spent = 1-token rule, which applies to your qualifying spending on the store, including eligible purchases. Check your Tokens page for the exact breakdown of what's counted." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["check", "current", "token", "balance", "view", "anytime"], question: "Where can I check my current token balance?", answer: "You can view your token balance anytime by clicking \"Tokens\" in the top navigation menu of the website." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["tokens", "expire", "please", "refer", "page", "account"], question: "Do my tokens expire?", answer: "Please refer to your Tokens page in your account for the most current details on token validity, so you never miss redeeming what you've earned." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["there", "referral", "program", "earn", "extra", "tokens"], question: "Is there a referral program where I can earn extra tokens?", answer: "Our core token system is based on spending (₹100 = 1 token). For any current referral promotions, please check the Tokens page or Home page for the latest updates." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["earn", "tokens", "buy", "premium", "plan", "earned"], question: "Do I earn tokens when I buy the Premium Plan?", answer: "Tokens are earned on qualifying spending at the ₹100 = 1 token rate. Check your Tokens page after subscribing to see how your Premium purchase is reflected." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["what's", "minimum", "number", "tokens", "need", "redeem"], question: "What's the minimum number of tokens I need before I can redeem anything?", answer: "You need at least 50 tokens to start redeeming a free book, with some books requiring up to 100 tokens depending on their value." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["use", "tokens", "along", "discount", "code", "same"], question: "Can I use tokens along with a discount code on the same order?", answer: "Token redemption is a separate reward system from discount codes. Please check at checkout whether both can be applied together, as this may vary by promotion." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["transfer", "gift", "tokens", "another", "user", "tied"], question: "Can I transfer or gift my tokens to another user?", answer: "Tokens are tied to your individual account and are not transferable to other users at this time." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["get", "bonus", "tokens", "just", "signing", "standard"], question: "Do I get bonus tokens just for signing up?", answer: "Our standard system rewards tokens based on spending (₹100 = 1 token). For any sign-up bonuses currently running, check the Home page for active promotions." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["use", "tokens", "partial", "payment", "instead", "redeeming"], question: "Can I use tokens as partial payment instead of redeeming a full free book?", answer: "Tokens are designed specifically for redeeming free books once you reach 50–100 tokens, rather than as partial cash payment on an order." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["free", "book", "redeem", "tokens", "depends", "interest"], question: "Which free book should I redeem with my tokens?", answer: "It depends on your interest — if you're an engineering student, redeeming toward \"Data Structures Simplified\" gives you great value; if you prefer lighter reading, a Tamil Literature title like \"Vetri Vazhi\" is a lovely pick." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["spend", "one", "order", "many", "tokens", "earn"], question: "If I spend ₹350 in one order, how many tokens do I earn?", answer: "At ₹100 = 1 token, a ₹350 order earns you 3 tokens (based on complete ₹100 units spent)." },
+  { category: "Tokens, Credits & Free Book Rewards", keywords: ["tokens", "work", "both", "normal", "premium", "accounts"], question: "Do tokens work for both Normal and Premium accounts?", answer: "Yes — both Normal and Premium account holders earn tokens on qualifying spending. Token earning is a benefit of the Normal (free) plan and continues for Premium members too." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["search", "specific", "book", "use", "bar", "labeled"], question: "How do I search for a specific book?", answer: "Use the search bar labeled \"Search books...\" at the top of the Books Collection page, and type in the book title or keyword you're looking for." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["filter", "books", "category", "use", "dropdown", "next"], question: "Can I filter books by category?", answer: "Yes, use the category dropdown next to the search bar (e.g., Engineering, Self Improvement, Moral & Ethics, Tamil Literature) to filter the collection instantly." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["filter", "sort", "books", "price", "collection", "page"], question: "Can I filter or sort books by price?", answer: "The Books Collection page lets you browse by category and search by title; each book's price and rental rates are clearly displayed on its card so you can compare easily while browsing." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["wishlist", "feature", "use", "click", "wish", "button"], question: "What is the wishlist feature and how do I use it?", answer: "Click the \"♡Wish\" button on any book card to save it to your wishlist for later — handy for books you want to buy or rent in the future." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["sort", "books", "rating", "star", "ratings", "displayed"], question: "Can I sort books by rating?", answer: "Star ratings are displayed on each book card in the Books Collection, so you can visually compare books by rating as you browse." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["categories", "books", "offer", "four", "engineering", "self"], question: "What categories of books do you offer?", answer: "We offer four categories: Engineering, Self Improvement, Moral & Ethics, and Tamil Literature — all written by Nithiyasree P." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["created", "ancient", "wisdom", "store", "author", "nithiyasree"], question: "Who created Ancient Wisdom Store?", answer: "Ancient Wisdom Store was created by author Nithiyasree P, who holds a B.E. in Computer Science & Engineering from National Engineering College." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["ancient", "wisdom", "store", "legitimate", "trustworthy", "dedicated"], question: "Is Ancient Wisdom Store a legitimate/trustworthy store?", answer: "Yes, Ancient Wisdom Store is a dedicated platform for the books authored by Nithiyasree P, offering secure payment options (COD, UPI, cards, net banking) and order tracking for a safe shopping experience." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["contact", "customer", "support", "reach", "team", "through"], question: "How do I contact customer support?", answer: "You can reach out to our support team through the contact details listed on the site. For order-specific issues, using the \"Track\" page first helps us assist you faster." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["deliver", "all", "locations", "only", "specific", "areas"], question: "Do you deliver to all locations, or only specific areas?", answer: "Delivery availability may vary by location. Enter your address at checkout to confirm whether delivery is available to you." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["there", "mobile", "app", "ancient", "wisdom", "store"], question: "Is there a mobile app for Ancient Wisdom Store?", answer: "Currently, Ancient Wisdom Store is available as a website. You can access it conveniently from your mobile browser as well." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["website", "available", "tamil", "only", "english", "store"], question: "Is the website available in Tamil, or only English?", answer: "The store interface is currently in English, though several of our books, like \"Tamil Mozhi Amudam\" and \"Uyir Ezhuthukal,\" are written in Tamil." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["what's", "difference", "normal", "account", "premium", "free"], question: "What's the difference between a Normal account and a Premium account?", answer: "A Normal account is free and lets you buy books, use the wishlist, and earn tokens. A Premium account (₹199/month) includes everything in Normal, plus rental access — timed online reading for any book." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["customer", "support", "working", "hours", "specific", "please"], question: "What are your customer support working hours?", answer: "For specific support hours, please check the contact/support section of our website, as this may be updated periodically." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["see", "order", "history", "past", "purchases", "available"], question: "Where can I see my order history and past purchases?", answer: "Your order history is available in your Account section, and you can also check current order progress anytime via the \"Track\" page." },
+  { category: "Purchasing, Orders & Payments", keywords: ["return", "book", "purchased", "get", "refund", "cart"], question: "How can I return a book I purchased and get a refund?", answer: "Go to your Cart page, scroll to the 'Return a Book' section, select the ordered item, and click Return. Your refund is processed to the original payment method within 3 to 5 business days." },
+  { category: "Purchasing, Orders & Payments", keywords: ["stages", "order", "through", "tracking", "orders", "move"], question: "What stages does my order go through when tracking it?", answer: "Orders move through four stages: Ordered, Packed, Shipped, and Delivered. You can check your current stage anytime on the 'Track' page using your Order ID or checkout email." },
+  { category: "Purchasing, Orders & Payments", keywords: ["format", "order", "ids", "follow", "aws", "xxxxxxxx"], question: "What format is my Order ID in?", answer: "Order IDs follow the format AWS-XXXXXXXX (e.g., AWS-KECFVYUA) and are shown right after checkout, as well as under 'My Orders' in your Account dashboard." },
+  { category: "Purchasing, Orders & Payments", keywords: ["rent", "book", "days", "instead", "just", "hour"], question: "Can I rent a book for 3 days instead of just an hour or a day?", answer: "Yes — in addition to the hourly and daily rates shown on each book, rentals can also be booked for 1 Hour, 1 Day, or 3 Days depending on how long you need access." },
+  { category: "Purchasing, Orders & Payments", keywords: ["actually", "open", "read", "book", "i've", "rented"], question: "How do I actually open and read a book I've rented?", answer: "Go to the Rent tab, find your title under 'My Active Rentals', and click the READ button to open the timed online reader." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["contact", "author", "store", "owner", "directly", "email"], question: "How do I contact the author or store owner directly?", answer: "You can email Nithiyasree P at 25104016@nec.edu.in or call +91 98765 43210." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["author's", "college", "roll", "number", "author", "nithiyasree"], question: "What is the author's college and roll number?", answer: "Author Nithiyasree P studies B.E. Computer Science & Engineering at National Engineering College, Roll No. 25104016." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["technical", "skills", "author", "nithiyasree", "skilled", "python"], question: "What technical skills does the author have?", answer: "Nithiyasree P is skilled in C, C++, Python, HTML, CSS, JavaScript, and SQL." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["author's", "hobbies", "include", "reading", "drawing", "music"], question: "What are the author's hobbies?", answer: "Her hobbies include Reading, Drawing, Music, and Coding." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["many", "tokens", "need", "redeem", "fundamentals", "programming'"], question: "How many tokens do I need to redeem 'Fundamentals of Programming', 'Focus & Flourish', or 'Virtues of Life' for free?", answer: "Each of these requires 50 tokens to redeem for free." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["many", "tokens", "need", "redeem", "uyir", "ezhuthukal'"], question: "How many tokens do I need to redeem 'Uyir Ezhuthukal' or 'Data Structures Simplified'?", answer: "Both require 75 tokens to redeem for free." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["many", "tokens", "need", "redeem", "vetri", "vazhi'"], question: "How many tokens do I need to redeem 'Vetri Vazhi' for free?", answer: "'Vetri Vazhi' requires 100 tokens — our highest redemption threshold." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["tokens", "ever", "expire", "stay", "account", "balance"], question: "Do tokens ever expire?", answer: "No — tokens do not expire and stay in your account balance until you choose to redeem them." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["remove", "book", "cart", "checking", "open", "tab"], question: "How do I remove a book from my cart before checking out?", answer: "Open the Cart tab and click 'Remove' next to the item you no longer want in your order." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["website", "usable", "mobile", "phones", "site", "fully"], question: "Is the website usable on mobile phones?", answer: "Yes, the site is fully responsive with a hamburger menu for mobile navigation, so you can browse, buy, and rent books comfortably from your phone." }
+];
+
+const AWS_POLICIES = {
+  rentals: "Requires Premium Plan (₹199/month). Timed online reading access starts upon opening the book.",
+  tokens: "Spend ₹100 = Earn 1 Token. Collect 50 to 100 tokens to redeem free books.",
+  paymentMethods: ["Cash on Delivery (COD)", "Google Pay", "PhonePe", "UPI (Paytm/BHIM)", "Debit/Credit Cards", "Net Banking"],
+  accountPlans: { normal: "Free - buy, wishlist, tokens", premium: "₹199/mo - rental access" },
+  rentalDurations: "Rentals can be booked for 1 Hour, 1 Day, or 3 Days, in addition to the per-hour/per-day rates listed for each book.",
+  returnsRefunds: "Orders can be returned from the Cart page under 'Return a Book' by selecting the ordered item. Refunds are processed to the original payment method within 3 to 5 business days.",
+  orderTrackingStages: ["Ordered", "Packed", "Shipped", "Delivered"],
+  orderTrackingHow: "Use the 'Track' tab and enter your Order ID (format AWS-XXXXXXXX) or the email used at checkout.",
+  tokenRedemptionNote: "Free-book redemption thresholds vary by book: 50 tokens for Fundamentals of Programming, Focus & Flourish, or Virtues of Life; 75 tokens for Uyir Ezhuthukal or Data Structures Simplified; 100 tokens for Vetri Vazhi.",
+  tokensExpire: "Tokens do not expire and remain in the account balance until redeemed."
+};
+
+const AWS_AUTHOR = {
+  name: "Nithiyasree P",
+  rollNo: "25104016",
+  college: "National Engineering College",
+  email: "25104016@nec.edu.in",
+  phone: "+91 98765 43210",
+  skills: ["C", "C++", "Python", "HTML", "CSS", "JavaScript", "SQL"],
+  hobbies: ["Reading", "Drawing", "Music", "Coding"]
+};
+
+function awsFormatBookLine(b) {
+  return "• " + b.title + " — ₹" + b.price + " (Rent: ₹" + b.rentHour + "/hr, ₹" + b.rentDay + "/day) — " + b.description;
+}
+
+function awsListBooksByCategory(categoryName) {
+  const books = AWS_CATALOG.filter(b => b.category.toLowerCase() === categoryName.toLowerCase());
+  if (books.length === 0) return null;
+  return "Here are our " + categoryName + " books:\n" + books.map(awsFormatBookLine).join("\n");
+}
+
+function awsListAllBooks() {
+  const categories = [...new Set(AWS_CATALOG.map(b => b.category))];
+  return "We have " + AWS_CATALOG.length + " books across " + categories.length + " categories, all by Nithiyasree P:\n\n" +
+    categories.map(cat => {
+      const books = AWS_CATALOG.filter(b => b.category === cat);
+      return cat + ":\n" + books.map(awsFormatBookLine).join("\n");
+    }).join("\n\n");
+}
+
+function awsDetectCategory(promptLower) {
+  if (/\bengineering\b|\bprogramming\b|\bcoding books\b|\bcs books\b/.test(promptLower)) return "Engineering";
+  if (/\bself[\s-]?improvement\b|\bself help\b|\bpersonal growth\b/.test(promptLower)) return "Self Improvement";
+  if (/\bmoral\b|\bethics\b|\bethical\b|\bvalues books\b/.test(promptLower)) return "Moral & Ethics";
+  if (/\btamil\b/.test(promptLower)) return "Tamil Literature";
+  return null;
+}
+
+function awsIsAllBooksQuery(promptLower) {
+  return /\ball books\b|\bbooks available\b|\bbook list\b|\bfull catalog\b|\bfull collection\b|\bevery book\b|\ball the books\b|\bwhat books do you have\b|\bwhich books\b|\bwhat books\b|\bshow me (your )?books\b|\blist of books\b/.test(promptLower);
+}
+
+// Tier 1: catalog / category listing (deterministic, always accurate — no
+// keyword scoring needed since this is a structured lookup over AWS_CATALOG)
+function awsTryCatalogAnswer(promptLower) {
+  if (awsIsAllBooksQuery(promptLower)) return awsListAllBooks();
+  const cat = awsDetectCategory(promptLower);
+  if (cat) {
+    const listing = awsListBooksByCategory(cat);
+    if (listing) return listing;
+  }
+  return null;
+}
+
+// Tier 2: direct policy questions (payment, rentals, tokens, returns, etc.)
+function awsTryPolicyAnswer(promptLower) {
+  if (/\bpayment method|\bhow.*pay\b|\bcod\b|\bcash on delivery\b|\bupi\b|\bnet ?banking\b|\bcard payment\b/.test(promptLower)) {
+    return "We accept " + AWS_POLICIES.paymentMethods.join(", ") + ".";
+  }
+  if (/\breturns?\b|\brefunds?\b|\breturn policy\b/.test(promptLower)) {
+    return AWS_POLICIES.returnsRefunds;
+  }
+  if (/\btrack(ing)?\b.*\border\b|\border status\b|\bwhere is my order\b/.test(promptLower)) {
+    return AWS_POLICIES.orderTrackingHow + " Orders move through these stages: " + AWS_POLICIES.orderTrackingStages.join(" → ") + ".";
+  }
+  if (/\brents?\b|\brentals?\b|\btimers?\b|\bpremium plan\b|\bread online\b/.test(promptLower)) {
+    return AWS_POLICIES.rentals + " " + AWS_POLICIES.rentalDurations;
+  }
+  if (/\btokens?\b|\bcredits?\b|\bfree books?\b|\bredeem(ing|ed|s)?\b/.test(promptLower)) {
+    return AWS_POLICIES.tokens + " " + AWS_POLICIES.tokenRedemptionNote + " " + AWS_POLICIES.tokensExpire;
+  }
+  if (/\bnormal\b.*\bpremium\b|\baccount plan\b|\bnormal account\b|\bpremium account\b/.test(promptLower)) {
+    return "Normal Account: " + AWS_POLICIES.accountPlans.normal + ". Premium Account: " + AWS_POLICIES.accountPlans.premium + ".";
+  }
+  if (/\bauthor\b|\bnithiyasree\b|\bwho (wrote|made|created|is)\b.*(store|book|website|site)|\bcontact (the )?(author|store|owner|support)\b|\bphone number\b|\broll no\b/.test(promptLower)) {
+    return "All books are written by " + AWS_AUTHOR.name + " (B.E. Computer Science & Engineering, " + AWS_AUTHOR.college +
+      ", Roll No. " + AWS_AUTHOR.rollNo + "). Contact: " + AWS_AUTHOR.email + " or " + AWS_AUTHOR.phone + ".";
+  }
+  return null;
+}
+
+// Tier 3: keyword-scored match across all 115 FAQ entries
+function awsTryFaqAnswer(promptLower, promptWords) {
+  let bestMatch = null;
+  let maxScore = 0;
+
+  ANCIENT_WISDOM_QA_DATASET.forEach(item => {
+    let score = 0;
+    item.keywords.forEach(kw => {
+      if (promptLower.includes(kw)) score += 3;
+      if (promptWords.includes(kw)) score += 2;
+    });
+    if (score > maxScore) { maxScore = score; bestMatch = item; }
+  });
+
+  return maxScore >= 3 ? bestMatch.answer : null;
+}
+
 function queryAncientWisdomAI(userPrompt) {
   if (!userPrompt || userPrompt.trim() === "") {
     return "Please ask a question about books, prices, rentals, tokens, or store details!";
   }
-  const cleanPrompt = userPrompt.toLowerCase().replace(/[^\w\s]/gi, '');
-  const promptWords = cleanPrompt.split(/\s+/);
-  let bestMatch = null;
-  let maxScore = 0;
- 
-  ANCIENT_WISDOM_QA_DATASET.forEach(item => {
-    let score = 0;
-    item.keywords.forEach(kw => {
-      if (cleanPrompt.includes(kw.toLowerCase())) score += 5;
-      kw.toLowerCase().split(/\s+/).forEach(kwWord => {
-        promptWords.forEach(pWord => {
-          if (pWord === kwWord && pWord.length > 2) score += 2;
-        });
-      });
-    });
-    if (score > maxScore) { maxScore = score; bestMatch = item; }
-  });
- 
-  if (maxScore > 2 && bestMatch) return bestMatch.answer;
- 
-  return "Welcome to Ancient Wisdom Store by Nithiyasree P! I can answer questions about our 12 books, prices, online rentals (₹18–₹35/hr), the ₹199/mo Premium Plan, earning tokens (₹100 = 1 token), payment options (COD/UPI/Cards), or order tracking. How can I help you today?";
+  const promptLower = userPrompt.toLowerCase();
+  const cleanPrompt = promptLower.replace(/[^\w\s]/gi, '');
+  const promptWords = cleanPrompt.split(/\s+/).filter(w => w.length > 2);
+
+  return (
+    awsTryCatalogAnswer(promptLower) ||
+    awsTryPolicyAnswer(promptLower) ||
+    awsTryFaqAnswer(cleanPrompt, promptWords) ||
+    ("Welcome to Ancient Wisdom Store by Nithiyasree P! I can tell you about our 12 books (Engineering, Self Improvement, Moral & Ethics, Tamil Literature), prices, online rentals (₹18–₹35/hr), the ₹199/mo Premium Plan, earning tokens (₹100 = 1 token), payment options, or order tracking. Try asking things like \"engineering books\", \"all books\", or \"how do rentals work\".")
+  );
 }
 </script>
 </body>
 </html>
+ 
