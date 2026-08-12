@@ -686,160 +686,6 @@
     font-weight: bold;
   }
 </style>
-
-<!-- ========================================== -->
-<!-- ANCIENT WISDOM STORE - AI CHATBOT UI      -->
-<!-- Now calls a real AI backend (dynamic,     -->
-<!-- ChatGPT/Gemini-style) grounded in the     -->
-<!-- store's knowledge base, with your old     -->
-<!-- local Q&A matcher kept as an offline      -->
-<!-- fallback if the backend is unreachable.   -->
-<!-- ========================================== -->
-<div id="aws-chatbot-container">
-  <button id="aws-chat-toggle" onclick="toggleAwsChat()">💬 AI Assistant</button>
- 
-  <div id="aws-chat-window" style="display: none;">
-    <div id="aws-chat-header">
-      <div>
-        <strong>📖 Ancient Wisdom Bot</strong>
-        <div style="font-size: 10px; opacity: 0.8;" id="aws-bot-status">Powered by AI &bull; Store Knowledge Base</div>
-      </div>
-      <button onclick="toggleAwsChat()" style="background: none; border: none; color: white; cursor: pointer; font-size: 16px;">✕</button>
-    </div>
- 
-    <div id="aws-chat-body">
-      <div class="aws-msg aws-bot-msg">
-        Hello! 👋 Welcome to <strong>Ancient Wisdom Store</strong>. Ask me about available books, pricing, rentals, or token offers!
-      </div>
-    </div>
- 
-    <div id="aws-chat-footer">
-      <input type="text" id="aws-chat-input" placeholder="Ask about books, rentals, offers..." onkeypress="handleAwsKeyPress(event)">
-      <button id="aws-chat-send-btn" onclick="sendAwsMessage()">Send</button>
-    </div>
-  </div>
-</div>
- 
-<style>
-  #aws-chatbot-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 10000;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  #aws-chat-toggle {
-    background: #8b4513;
-    color: #ffffff;
-    border: 2px solid #f0e6d2;
-    padding: 12px 22px;
-    border-radius: 30px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    font-size: 15px;
-    font-weight: bold;
-    transition: transform 0.2s;
-  }
-  #aws-chat-toggle:hover {
-    transform: scale(1.05);
-  }
-  #aws-chat-window {
-    width: 340px;
-    height: 440px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: absolute;
-    bottom: 60px;
-    right: 0;
-    border: 1px solid #d4c39c;
-  }
-  #aws-chat-header {
-    background: #8b4513;
-    color: #ffffff;
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  #aws-chat-body {
-    flex: 1;
-    padding: 14px;
-    overflow-y: auto;
-    background: #fdfbf7;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .aws-msg {
-    max-width: 82%;
-    padding: 9px 13px;
-    border-radius: 12px;
-    font-size: 13px;
-    line-height: 1.45;
-  }
-  .aws-bot-msg {
-    background: #f0e6d2;
-    color: #2c1d11;
-    align-self: flex-start;
-    border-bottom-left-radius: 2px;
-  }
-  .aws-user-msg {
-    background: #8b4513;
-    color: #ffffff;
-    align-self: flex-end;
-    border-bottom-right-radius: 2px;
-  }
-  .aws-typing-msg {
-    background: #f0e6d2;
-    align-self: flex-start;
-    border-bottom-left-radius: 2px;
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    padding: 11px 14px;
-  }
-  .aws-typing-msg span {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: #8b4513; display: inline-block;
-    animation: aws-bounce 1.2s infinite ease-in-out;
-  }
-  .aws-typing-msg span:nth-child(2) { animation-delay: .15s; }
-  .aws-typing-msg span:nth-child(3) { animation-delay: .3s; }
-  @keyframes aws-bounce {
-    0%, 60%, 100% { transform: translateY(0); opacity: .5; }
-    30% { transform: translateY(-4px); opacity: 1; }
-  }
-  #aws-chat-footer {
-    display: flex;
-    border-top: 1px solid #e0e0e0;
-    padding: 10px;
-    background: #ffffff;
-  }
-  #aws-chat-input {
-    flex: 1;
-    border: 1px solid #cccccc;
-    padding: 8px 12px;
-    border-radius: 6px;
-    outline: none;
-    font-size: 13px;
-  }
-  #aws-chat-input:disabled { background: #f2f2f2; }
-  #aws-chat-footer button {
-    background: #8b4513;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    margin-left: 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  #aws-chat-footer button:disabled { opacity: .6; cursor: not-allowed; }
-</style>
   <!-- ========================================== -->
 <!-- ANCIENT WISDOM STORE - AI CHATBOT UI      -->
 <!-- Calls a real AI backend (dynamic,         -->
@@ -1280,7 +1126,29 @@ const ANCIENT_WISDOM_QA_DATASET = [
   { category: "Search, Browsing & General Store Inquiries", keywords: ["many", "tokens", "need", "redeem", "vetri", "vazhi'"], question: "How many tokens do I need to redeem 'Vetri Vazhi' for free?", answer: "'Vetri Vazhi' requires 100 tokens — our highest redemption threshold." },
   { category: "Search, Browsing & General Store Inquiries", keywords: ["tokens", "ever", "expire", "stay", "account", "balance"], question: "Do tokens ever expire?", answer: "No — tokens do not expire and stay in your account balance until you choose to redeem them." },
   { category: "Search, Browsing & General Store Inquiries", keywords: ["remove", "book", "cart", "checking", "open", "tab"], question: "How do I remove a book from my cart before checking out?", answer: "Open the Cart tab and click 'Remove' next to the item you no longer want in your order." },
-  { category: "Search, Browsing & General Store Inquiries", keywords: ["website", "usable", "mobile", "phones", "site", "fully"], question: "Is the website usable on mobile phones?", answer: "Yes, the site is fully responsive with a hamburger menu for mobile navigation, so you can browse, buy, and rent books comfortably from your phone." }
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["website", "usable", "mobile", "phones", "site", "fully"], question: "Is the website usable on mobile phones?", answer: "Yes, the site is fully responsive with a hamburger menu for mobile navigation, so you can browse, buy, and rent books comfortably from your phone." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["get", "premium", "account", "select", "premium'", "right"], question: "How do I get a Premium account?", answer: "You can select 'Premium' (₹199/mo) right when registering a new account, or upgrade anytime later from your Account dashboard or the Rent tab by clicking 'Upgrade to Premium'. Activation is instant after payment." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["exactly", "get", "premium", "account", "month", "unlocks"], question: "What exactly do I get with a Premium account?", answer: "Premium (₹199/month) unlocks: renting any book online with timed reading access, choosing 1 Hour / 1 Day / 3 Days rental durations, a live countdown timer while reading, plus everything included in the free Normal plan — buying, wishlisting, and earning tokens." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["upgrade", "premium", "already", "free", "account", "log"], question: "Can I upgrade to Premium after I already have a free account?", answer: "Yes — log in, open your Account dashboard, and click 'Upgrade to Premium — ₹199/mo' (or click 'Upgrade to Premium' from the Rent tab). It activates instantly after payment." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["cancel", "premium", "plan", "whenever", "want", "cancelled"], question: "Can I cancel my Premium plan whenever I want?", answer: "Yes, Premium can be cancelled anytime; there's no lock-in period." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["create", "new", "account", "website", "click", "icon"], question: "How do I create a new account on the website?", answer: "Click the Account icon, switch to the 'Register' tab, fill in your Username, Email, and Password (with confirmation), choose Normal or Premium, and click 'Create Account'." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["log", "account", "click", "icon", "stay", "login'"], question: "How do I log into my account?", answer: "Click the Account icon, stay on the 'Login' tab, enter your Username and Password, and click 'Login'." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["log", "account", "open", "dashboard", "while", "logged"], question: "How do I log out of my account?", answer: "Open your Account dashboard while logged in and click the 'Logout' button near the bottom of the page." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["add", "book", "wishlist", "click", "wish'", "button"], question: "How do I add a book to my wishlist?", answer: "Click the '♡ Wish' button on any book's card in the Books Collection. You can view everything you've wishlisted on the Cart page." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["add", "book", "cart", "click", "cart'", "button"], question: "How do I add a book to my cart?", answer: "Click the '+Cart' button on any book card. Your items and running total appear on the Cart page, along with tokens you'll earn." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["exact", "steps", "check", "place", "order", "cart"], question: "What are the exact steps to check out and place an order?", answer: "Go to Cart > click 'Proceed to Order' > fill in Full Name, Email, City, and Address > click 'Choose Payment & Place Order' > select a payment method and confirm. You'll receive an Order ID to track your order afterward." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["online", "book", "reader", "work", "i've", "rented"], question: "How does the online book reader work once I've rented a book?", answer: "Open your rental from 'My Active Rentals' on the Rent tab by clicking 'READ'. The reader shows a live countdown timer, lets you flip pages with Prev/Next, and automatically closes with an expiry notice when your time runs out." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["search", "filter", "books", "site", "page", "type"], question: "How do I search or filter books on the site?", answer: "On the Books page, type into the 'Search books...' box to filter by keyword/title, and use the category dropdown to filter by Engineering, Self Improvement, Moral & Ethics, or Tamil Literature — you can combine both." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["see", "account", "dashboard", "shows", "username", "email"], question: "What can I see on my Account dashboard?", answer: "Your dashboard shows your username, email, account type badge (Normal/Premium), your order history, an upgrade prompt if you're on the free plan, a Change Password section, and a Logout button." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["information", "tokens", "page", "show", "shows", "current"], question: "What information does the Tokens page show me?", answer: "It shows your current token balance, a progress bar toward your next free-book redemption, total amount spent, a list of books you can redeem with their token cost, and your full token history." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["there", "way", "see", "all", "past", "orders"], question: "Is there a way to see all my past orders in one place?", answer: "Yes — your Account dashboard has a 'My Orders' section listing all your past orders." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["need", "logged", "buy", "rent", "book", "browse"], question: "Do I need to be logged in to buy or rent a book?", answer: "You can browse and add to cart without logging in, but you'll need an account to check out, track orders, earn tokens, and — for rentals specifically — a Premium account is required." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["payment", "popup", "work", "step", "pick", "method"], question: "How does the payment popup work step by step?", answer: "Pick a payment method (COD, Google Pay, PhonePe, UPI, Card, or Net Banking) from the grid and click 'Next'. Then fill in the details it asks for (UPI/transaction ID, card details, or your bank), and click 'Confirm & Pay'. COD skips the details step since you pay in cash on delivery." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["rent", "book", "directly", "books", "page", "instead"], question: "Can I rent a book directly from the Books page instead of the Rent tab?", answer: "Yes — every book card has its own 'Rent' button that takes you straight to choosing a rental duration for that book. You still need a Premium account to complete the rental." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["actually", "redeem", "specific", "book", "tokens", "page"], question: "How do I actually redeem a specific book with my tokens?", answer: "Go to the Tokens page, scroll to 'Redeem Free Books', find a book you have enough tokens for, and click its 'Redeem' button — the book is yours for free and the tokens are deducted immediately." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["happens", "click", "choose", "payment", "place", "order'"], question: "What happens after I click 'Choose Payment & Place Order'?", answer: "A payment window opens where you first select a method (COD, Google Pay, PhonePe, UPI, Card, or Net Banking) and click 'Next', then enter the required payment details and click 'Confirm & Pay' to finish." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["rent", "book", "directly", "books", "page", "instead"], question: "Can I rent a book directly from the Books page instead of going to the Rent tab?", answer: "Yes — every book card on the Books page has its own 'Rent' button that opens a quick duration picker for that specific book (a Premium account is still required)." },
+  { category: "Search, Browsing & General Store Inquiries", keywords: ["redeem", "specific", "free", "book", "tokens", "tab"], question: "How do I redeem a specific free book with my tokens?", answer: "Go to the Tokens tab, find the book under 'Redeem Free Books', and click its 'Redeem' button. It becomes clickable once you've reached that book's token threshold." }
 ];
 
 const AWS_POLICIES = {
@@ -1304,6 +1172,29 @@ const AWS_AUTHOR = {
   phone: "+91 98765 43210",
   skills: ["C", "C++", "Python", "HTML", "CSS", "JavaScript", "SQL"],
   hobbies: ["Reading", "Drawing", "Music", "Coding"]
+};
+
+const AWS_FEATURES = {
+  "premium_benefits": ["Rent any book online with timed reading access", "Choose 1 Hour, 1 Day, or 3 Days rental duration (or the per-book hourly/daily rate)", "Live countdown timer while reading", "All Normal account features included (buy, wishlist, earn tokens)"],
+  "premium_how_to_get": "You can get Premium in two ways: (1) When creating a new account, go to Account > Register, fill in your details, and select the 'Premium' plan card (₹199/mo) instead of 'Normal' before clicking Create Account. (2) If you already have a Normal account, log in, go to your Account dashboard, and click 'Upgrade to Premium — ₹199/mo', or click 'Upgrade to Premium' from the Rent tab. Payment is instant and activation is immediate.",
+  "premium_price": "Premium costs ₹199/month, cancel anytime.",
+  "registration_steps": "Click the 'Account' icon in the top bar > select the 'Register' tab > enter a Username, Email, and Password (and confirm it) > choose Normal (free) or Premium (₹199/mo) > click 'Create Account'.",
+  "login_steps": "Click the 'Account' icon in the top bar > make sure the 'Login' tab is selected > enter your Username and Password > click 'Login'.",
+  "logout_steps": "Open your Account dashboard (you must be logged in) and click the 'Logout' button near the bottom.",
+  "change_password_steps": "Log in, open your Account dashboard, scroll to 'Change Password', enter your Current Password and New Password, then click 'Update Password'.",
+  "wishlist_how_to": "Click the '♡ Wish' button on any book card in the Books Collection to save it. View all wishlisted books anytime on the Cart page under the 'Wishlist' section.",
+  "cart_how_to": "Click '+Cart' on any book card to add it to your cart. Open the Cart page (cart icon in the top bar) to review items, remove any you don't want, and see your running total plus tokens you'll earn.",
+  "checkout_steps": "From the Cart page, click 'Proceed to Order' > fill in Full Name, Email, City, and Address on the Order page > click 'Choose Payment & Place Order' > pick a payment method (COD, Google Pay, PhonePe, UPI, Card, or Net Banking) > confirm payment. You'll get an Order ID to track your order.",
+  "rent_flow": "Go to the 'Rent' tab (requires a Premium account). Browse 'Available to Rent', pick a book, choose a duration (hourly/daily rate, or 1 Hour / 1 Day / 3 Days), and pay. The book then appears under 'My Active Rentals' — click 'READ' to open the timed online reader, which shows a live countdown timer and lets you navigate pages with Prev/Next.",
+  "reader_features": "The online reader shows the book title, a live countdown timer (HH:MM:SS) of your remaining rental time, page navigation (Prev/Next with a 'Page X of Y' indicator), and closes automatically with an expiry notice once your timer hits zero.",
+  "search_filter_how_to": "On the Books page, type any keyword or title into the 'Search books...' box to filter instantly, and/or use the category dropdown (Engineering, Self Improvement, Moral & Ethics, Tamil Literature) to narrow results further. Both can be used together.",
+  "account_dashboard": "Once logged in, your Account dashboard shows your username, email, account badge (Normal/Premium), your order history under 'My Orders', an upgrade prompt if you're on Normal, a Change Password section, and a Logout button.",
+  "tokens_page_features": "The Tokens page shows your current token balance, a progress bar toward your next free-book redemption, total amount spent, a 'Redeem Free Books' section listing each redeemable title with its token cost, and a full Token History log.",
+  "payment_modal_flow": "After clicking 'Choose Payment & Place Order', a payment window opens: pick a method (COD, Google Pay, PhonePe, UPI, Card, or Net Banking) and click 'Next'. Then enter the required details (e.g., card number/expiry/CVV, UPI ID, or bank selection) and click 'Confirm & Pay'. COD skips detail entry and just confirms.",
+  "quick_rent_button": "Every book card in the Books Collection also has its own 'Rent' button — click it to jump straight into choosing a rental duration for that book, without needing to go through the Rent tab first (you'll still need a Premium account).",
+  "redeem_token_flow": "Go to the Tokens page, scroll to 'Redeem Free Books', find a book you have enough tokens for, and click its 'Redeem' button. The book is then yours for free and the tokens are deducted from your balance.",
+  "quick_rent_from_book_card": "On the Books page, every book card has its own 'Rent' button — click it to open a quick rental duration picker for that exact book without needing to go to the Rent tab first (Premium account still required).",
+  "redeem_specific_reward_flow": "Go to the Tokens tab, scroll to 'Redeem Free Books', find the book you want, and click its 'Redeem' button — it's enabled once your token balance meets that book's threshold (50, 75, or 100 tokens)."
 };
 
 function awsFormatBookLine(b) {
@@ -1349,15 +1240,100 @@ function awsTryCatalogAnswer(promptLower) {
   return null;
 }
 
-// Tier 2: direct policy questions (payment, rentals, tokens, returns, etc.)
+// Tier 2: direct policy & how-to questions (payment, premium, registration,
+// login, wishlist, cart, checkout, rentals, reader, search, account, etc.)
+// Ordered from most specific to most general so specific asks (e.g. "how do
+// I get Premium") don't get swallowed by a broader pattern (e.g. "premium").
 function awsTryPolicyAnswer(promptLower) {
+  // --- Premium: benefits ---
+  const hasPremiumWord = /\bpremium\b/.test(promptLower);
+  const hasBenefitWord = /\b(benefits?|advantages?|features?|worth it|what do i get|perks?)\b/.test(promptLower);
+  if (hasPremiumWord && hasBenefitWord) {
+    return "Premium (" + AWS_FEATURES.premium_price + ") gives you:\n" +
+      AWS_FEATURES.premium_benefits.map(b => "• " + b).join("\n");
+  }
+  if (/\bwhy (go|upgrade to|get|choose) premium\b/.test(promptLower)) {
+    return "Premium (" + AWS_FEATURES.premium_price + ") gives you:\n" +
+      AWS_FEATURES.premium_benefits.map(b => "• " + b).join("\n");
+  }
+  // --- Premium: how to get / upgrade ---
+  const hasGetVerb = /\b(get|become|buy|upgrade|activate|sign up for|switch to|go)\b/.test(promptLower);
+  if (hasPremiumWord && hasGetVerb && !hasBenefitWord) {
+    return AWS_FEATURES.premium_how_to_get;
+  }
+  if (hasPremiumWord && /\b(price|cost|how much)\b/.test(promptLower)) {
+    return AWS_FEATURES.premium_price + " " + AWS_FEATURES.premium_how_to_get;
+  }
+  if (hasPremiumWord && /\bcancel\b/.test(promptLower)) {
+    return "Yes, Premium can be cancelled anytime — there's no lock-in period.";
+  }
+
+  // --- Account: register / login / logout / password ---
+  if (/\b(how|where).*(register|sign up|create (an? )?account)\b|\bcreate new account\b/.test(promptLower)) {
+    return AWS_FEATURES.registration_steps;
+  }
+  if (/\b(how|where).*(log ?in|sign ?in)\b/.test(promptLower)) {
+    return AWS_FEATURES.login_steps;
+  }
+  if (/\b(how|where).*(log ?out|sign ?out)\b/.test(promptLower)) {
+    return AWS_FEATURES.logout_steps;
+  }
+  if (/\bchange.*password\b|\breset.*password\b|\bupdate.*password\b/.test(promptLower)) {
+    return AWS_FEATURES.change_password_steps;
+  }
+  if (/\baccount dashboard\b|\bwhat.*(see|show).*(my )?account\b|\bwhat.*account (page|dashboard) (show|have)\b/.test(promptLower)) {
+    return AWS_FEATURES.account_dashboard;
+  }
+  if (/\bpast orders\b|\border history\b|\bprevious orders\b|\bmy orders\b/.test(promptLower)) {
+    return "Your Account dashboard has a 'My Orders' section listing every order you've placed. You can also track any specific order's live status from the 'Track' tab.";
+  }
+
+  // --- Wishlist / cart / checkout ---
+  if (/\bwishlist\b|\bwish list\b|\bsave.*book.*later\b|\bfavorite.*book\b/.test(promptLower)) {
+    return AWS_FEATURES.wishlist_how_to;
+  }
+  if (/\badd.*to.*cart\b|\bhow.*cart work\b|\bremove.*from.*cart\b/.test(promptLower)) {
+    return AWS_FEATURES.cart_how_to;
+  }
+  if (/\b(how|steps?).*(checkout|check out|place (an? )?order|buy a book)\b|\bhow (do|to) i (buy|order|purchase)\b/.test(promptLower)) {
+    return AWS_FEATURES.checkout_steps;
+  }
+
+  // --- Search / filter ---
+  if (/\b(how|where).*(search|filter)\b.*book|\bsearch (for )?books\b|\bfilter.*categor/.test(promptLower)) {
+    return AWS_FEATURES.search_filter_how_to;
+  }
+
+  // --- Rentals: step-by-step flow & reader ---
+  if (/\b(how|steps?).*(rent a book|rent books)\b|\bhow (do|to) i rent\b/.test(promptLower)) {
+    return AWS_FEATURES.rent_flow;
+  }
+  if (/\breader\b|\bcountdown\b|\bpage navigation\b|\bopen (a |my )?rented book\b|\bread.*rented book\b/.test(promptLower)) {
+    return AWS_FEATURES.reader_features;
+  }
+  if (/\bpayment (modal|window|screen|popup)\b|\bafter.*(choose|click).*pay\b|\bconfirm.*pay\b.*steps?/.test(promptLower)) {
+    return AWS_FEATURES.payment_modal_flow;
+  }
+  if (/\brent\b.*(from|on).*(books? page|book card)\b|\bquick rent\b|\brent button.*book card\b/.test(promptLower)) {
+    return AWS_FEATURES.quick_rent_from_book_card;
+  }
+  if (/\bredeem\b.*(specific|particular|this|a )?\s*(free )?book\b|\bhow.*redeem.*book\b/.test(promptLower)) {
+    return AWS_FEATURES.redeem_specific_reward_flow;
+  }
+
+  // --- Tokens page ---
+  if (/\btoken balance\b|\btoken history\b|\btokens page\b/.test(promptLower)) {
+    return AWS_FEATURES.tokens_page_features;
+  }
+
+  // --- General policy fallbacks (broader patterns, checked last) ---
   if (/\bpayment method|\bhow.*pay\b|\bcod\b|\bcash on delivery\b|\bupi\b|\bnet ?banking\b|\bcard payment\b/.test(promptLower)) {
     return "We accept " + AWS_POLICIES.paymentMethods.join(", ") + ".";
   }
   if (/\breturns?\b|\brefunds?\b|\breturn policy\b/.test(promptLower)) {
     return AWS_POLICIES.returnsRefunds;
   }
-  if (/\btrack(ing)?\b.*\border\b|\border status\b|\bwhere is my order\b/.test(promptLower)) {
+  if (/\btrack(ing)?\b.*\border(s)?\b|\border status\b|\bwhere is my order\b/.test(promptLower)) {
     return AWS_POLICIES.orderTrackingHow + " Orders move through these stages: " + AWS_POLICIES.orderTrackingStages.join(" → ") + ".";
   }
   if (/\brents?\b|\brentals?\b|\btimers?\b|\bpremium plan\b|\bread online\b/.test(promptLower)) {
@@ -1367,7 +1343,7 @@ function awsTryPolicyAnswer(promptLower) {
     return AWS_POLICIES.tokens + " " + AWS_POLICIES.tokenRedemptionNote + " " + AWS_POLICIES.tokensExpire;
   }
   if (/\bnormal\b.*\bpremium\b|\baccount plan\b|\bnormal account\b|\bpremium account\b/.test(promptLower)) {
-    return "Normal Account: " + AWS_POLICIES.accountPlans.normal + ". Premium Account: " + AWS_POLICIES.accountPlans.premium + ".";
+    return "Normal Account: " + AWS_POLICIES.accountPlans.normal + ". Premium Account: " + AWS_POLICIES.accountPlans.premium + ". " + AWS_FEATURES.premium_how_to_get;
   }
   if (/\bauthor\b|\bnithiyasree\b|\bwho (wrote|made|created|is)\b.*(store|book|website|site)|\bcontact (the )?(author|store|owner|support)\b|\bphone number\b|\broll no\b/.test(promptLower)) {
     return "All books are written by " + AWS_AUTHOR.name + " (B.E. Computer Science & Engineering, " + AWS_AUTHOR.college +
@@ -1405,10 +1381,9 @@ function queryAncientWisdomAI(userPrompt) {
     awsTryCatalogAnswer(promptLower) ||
     awsTryPolicyAnswer(promptLower) ||
     awsTryFaqAnswer(cleanPrompt, promptWords) ||
-    ("Welcome to Ancient Wisdom Store by Nithiyasree P! I can tell you about our 12 books (Engineering, Self Improvement, Moral & Ethics, Tamil Literature), prices, online rentals (₹18–₹35/hr), the ₹199/mo Premium Plan, earning tokens (₹100 = 1 token), payment options, or order tracking. Try asking things like \"engineering books\", \"all books\", or \"how do rentals work\".")
+    ("Welcome to Ancient Wisdom Store by Nithiyasree P! I can help with our 12 books (Engineering, Self Improvement, Moral & Ethics, Tamil Literature), prices & rentals, getting Premium (₹199/mo) and its benefits, registering/logging in, wishlist & cart, checkout, tokens & free books, order tracking, and more. Try asking things like \"how do I get Premium\", \"engineering books\", or \"how do I place an order\".")
   );
 }
 </script>
 </body>
 </html>
- 
